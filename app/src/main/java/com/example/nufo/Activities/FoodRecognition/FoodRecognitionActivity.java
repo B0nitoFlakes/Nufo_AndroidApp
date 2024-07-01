@@ -66,6 +66,10 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         binding = ActivityFoodRecognitionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        setTitle("Food Recognition");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
+
         capture_button = findViewById(R.id.capture_button);
 
         detector = new Detector(this, Constants.MODEL_PATH, Constants.LABELS_PATH, this);

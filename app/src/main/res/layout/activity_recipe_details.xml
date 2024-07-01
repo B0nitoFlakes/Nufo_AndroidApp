@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.Recipes.RecipeDetailsActivity">
+    
+    <androidx.appcompat.widget.Toolbar
+        app:title="Recipe Details"
+        app:titleTextColor="@color/darkGreen"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        tools:ignore="HardcodedText" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView_meal_name"
+                android:text="Recipe Name"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/green"
+                android:padding="8dp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/textView_meal_source"
+                android:text="Source"
+                android:gravity="center"
+                android:textStyle="italic"
+                android:textColor="@color/lightGreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+
+            <ImageView
+                android:id="@+id/imageView_meal_image"
+                android:layout_margin="8dp"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>
+
+            <TextView
+                android:text="Nutrition"
+                android:textStyle="bold"
+                android:textColor="@color/green"
+                android:textSize="18sp"
+                android:padding="8dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                android:background="@color/white">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightGreen"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Calories :"
+                        android:textColor="@color/lightGreen"
+                        android:textSize="14sp"
+                        android:background="@color/green"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/textView_calories"
+                        android:text="Calories will be shown here"
+                        android:textColor="@color/darkGreen"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightGreen"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Carbohydrates :"
+                        android:textColor="@color/lightGreen"
+                        android:textSize="14sp"
+                        android:background="@color/green"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/textView_carbohydrates"
+                        android:text="Carbohydrates will be shown here"
+                        android:textColor="@color/darkGreen"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightGreen"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Fats :"
+                        android:textColor="@color/lightGreen"
+                        android:textSize="14sp"
+                        android:background="@color/green"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/textView_fats"
+                        android:text="Fats will be shown here"
+                        android:textColor="@color/darkGreen"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightGreen"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Protein :"
+                        android:textColor="@color/lightGreen"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:background="@color/green"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/textView_protein"
+                        android:text="Protein will be shown here"
+                        android:textColor="@color/darkGreen"
+                        android:textSize="14sp"
+                        android:padding="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView_meal_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                android:maxLines="5"
+                android:text="Summary"
+                android:textColor="@color/darkGreen"
+                android:textSize="14sp"
+                tools:ignore="HardcodedText" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_meal_instructions"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Similar Recipes"
+                android:textStyle="bold"
+                android:textColor="@color/darkGreen"
+                android:textSize="18sp"
+                android:padding="8dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_meal_similar"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Ingredients"
+                android:textStyle="bold"
+                android:textColor="@color/green"
+                android:textSize="18sp"
+                android:padding="8dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="HardcodedText" />
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_meal_ingredients"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/buttonLogFood"
+                android:layout_width="180dp"
+                android:layout_height="71dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_background"
+                android:elevation="10dp"
+                android:text="Log Food"
+                android:textColor="@color/darkGreen"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,SpUsage" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/buttonHome_recipeDetails"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/green_home_24"
+                    android:elevation="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText,SpUsage"
+                    tools:layout_editor_absoluteY="648dp" />
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:text="Home"
+                    android:textColor="@color/green"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

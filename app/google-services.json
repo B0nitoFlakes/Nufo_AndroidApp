@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "985929494200",
+    "project_id": "nufoapp",
+    "storage_bucket": "nufoapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985929494200:android:7f8fb5b112564a7d204e4d",
+        "android_client_info": {
+          "package_name": "com.example.nufo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfmNsxxt3oGioxXESselg0NBmGEqfh7Xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

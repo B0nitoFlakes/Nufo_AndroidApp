@@ -1,0 +1,46 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Nufo" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/darkGreen</item>
+        <item name="colorPrimaryVariant">@color/green</item>
+        <item name="colorOnPrimary">@color/lightGreen</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/green</item>
+        <item name="colorSecondaryVariant">@color/lightGreen</item>
+        <item name="colorOnSecondary">@color/yellowGreen</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <!-- ButtonStyle -->
+        <item name="buttonStyle">@style/ButtonWithBorder</item>
+
+        <item name="android:textColorHint">@android:color/darker_gray</item>
+
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="colorControlNormal">@color/black</item>
+
+    </style>
+
+    <style name="ButtonWithBorder" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_background</item>
+    </style>
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/lightGreen</item>
+    </style>
+
+    <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/white</item>
+        <item name="titleTextStyle">@style/MyActionBarTitleText</item>
+    </style>
+
+    <style name="MyActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/green</item> <!-- Title text color -->
+    </style>
+
+    <style name="Theme.Nufo" parent="Base.Theme.Nufo" />
+</resources>

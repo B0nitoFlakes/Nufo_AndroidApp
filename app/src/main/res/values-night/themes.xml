@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.Nufo.Night" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+    </style>
+
+    <style name="ButtonWithBorder" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/button_background</item>
+    </style>
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/lightGreen</item>
+    </style>
+
+    <style name="MyActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/white</item>
+        <item name="titleTextStyle">@style/MyActionBarTitleText</item>
+    </style>
+
+    <style name="MyActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/green</item> <!-- Title text color -->
+    </style>
+
+    <style name="Theme.Nufo" parent="Base.Theme.Nufo.Night" />
+</resources>

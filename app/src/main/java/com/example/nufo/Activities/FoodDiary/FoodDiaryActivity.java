@@ -146,6 +146,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(FoodDiaryActivity.this, FoodRecognitionActivity.class);
                 startActivity(intent);
+                optionDialog.dismiss();
             }
         });
 
@@ -162,6 +163,17 @@ public class FoodDiaryActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateDateDisplay();
+        if (optionDialog != null && optionDialog.isShowing()) {
+            optionDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (optionDialog != null && optionDialog.isShowing()) {
+            optionDialog.dismiss();
+        }
     }
 
     private void findViews()

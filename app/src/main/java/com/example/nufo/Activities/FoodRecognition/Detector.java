@@ -3,6 +3,7 @@ package com.example.nufo.Activities.FoodRecognition;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.util.Log;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
@@ -23,19 +24,19 @@ import java.util.List;
 
 public class Detector {
 
-    private Context context;
-    private String modelPath;
-    private String labelPath;
-    private DetectorListener detectorListener;
+    private final Context context;
+    private final String modelPath;
+    private final String labelPath;
+    private final DetectorListener detectorListener;
     private Interpreter interpreter;
-    private List<String> labels = new ArrayList<>();
+    private final List<String> labels = new ArrayList<>();
 
     private int tensorWidth = 0;
     private int tensorHeight = 0;
     private int numChannel = 0;
     private int numElements = 0;
 
-    private ImageProcessor imageProcessor = new ImageProcessor.Builder()
+    private final ImageProcessor imageProcessor = new ImageProcessor.Builder()
             .add(new NormalizeOp(INPUT_MEAN, INPUT_STANDARD_DEVIATION))
             .add(new CastOp(INPUT_IMAGE_TYPE))
             .build();
@@ -53,6 +54,8 @@ public class Detector {
             Interpreter.Options options = new Interpreter.Options();
             options.setNumThreads(4);
             interpreter = new Interpreter(model, options);
+
+            Log.d("Detector", "Model loaded successfully");
 
             int[] inputShape = interpreter.getInputTensor(0).shape();
             int[] outputShape = interpreter.getOutputTensor(0).shape();
@@ -72,8 +75,11 @@ public class Detector {
 
             reader.close();
             inputStream.close();
+            Log.d("Detector", "Labels loaded successfully");
+
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("Detector", "Error loading model or labels", e);
         }
     }
 
@@ -81,11 +87,13 @@ public class Detector {
         if (interpreter != null) {
             interpreter.close();
             interpreter = null;
+            Log.d("Detector", "Interpreter closed.");
         }
     }
 
     public void detect(Bitmap frame) {
         if (interpreter == null || tensorWidth == 0 || tensorHeight == 0 || numChannel == 0 || numElements == 0) {
+            Log.e("Detector", "Interpreter or Model parameters are not properly initialized.");
             return;
         }
 

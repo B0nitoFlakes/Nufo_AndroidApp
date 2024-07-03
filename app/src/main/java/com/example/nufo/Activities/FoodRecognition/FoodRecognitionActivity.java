@@ -1,12 +1,12 @@
 package com.example.nufo.Activities.FoodRecognition;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
 import com.example.nufo.R;
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -14,7 +14,10 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -25,6 +28,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.example.nufo.databinding.ActivityFoodRecognitionBinding;
@@ -34,11 +38,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class FoodRecognitionActivity extends AppCompatActivity implements Detector.DetectorListener {
-    Button capture_button;
 
     private ActivityFoodRecognitionBinding binding;
-    private boolean isFrontCamera = false;
-
+    private final boolean isFrontCamera = false;
     private Preview preview;
     private ImageAnalysis imageAnalyzer;
     private Camera camera;
@@ -51,15 +53,6 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
 
-    private ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(),
-            permissions -> {
-                if (permissions.get(Manifest.permission.CAMERA)) {
-                    startCamera();
-                }
-            });
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,46 +63,17 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
 
-        capture_button = findViewById(R.id.capture_button);
-
         detector = new Detector(this, Constants.MODEL_PATH, Constants.LABELS_PATH, this);
         detector.setup();
 
-        if (allPermissionsGranted()) {
+        if (detector != null && allPermissionsGranted()) {
             startCamera();
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor();
-        capture_button = findViewById(R.id.capture_button);
-        capture_button.setOnClickListener(v -> captureImage());
     }
-
-    private void captureImage() {
-        if (imageAnalyzer != null) {
-            imageAnalyzer.setAnalyzer(cameraExecutor, imageProxy -> {
-                ByteBuffer buffer = imageProxy.getPlanes()[0].getBuffer();
-                int width = imageProxy.getWidth();
-                int height = imageProxy.getHeight();
-                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                bitmap.copyPixelsFromBuffer(buffer);
-                imageProxy.close();
-
-                Matrix matrix = new Matrix();
-                matrix.postRotate(imageProxy.getImageInfo().getRotationDegrees());
-
-                if (isFrontCamera) {
-                    matrix.postScale(-1f, 1f, width / 2f, height / 2f);
-                }
-
-                Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-
-                detector.detect(rotatedBitmap);
-            });
-        }
-    }
-
 
     private void startCamera() {
         ProcessCameraProvider.getInstance(this).addListener(() -> {
@@ -184,12 +148,53 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         return true;
     }
 
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            permissions -> {
+                if (permissions.getOrDefault(Manifest.permission.CAMERA, false)) {
+                    startCamera();
+                } else {
+                    // Handle permission denial, e.g., show a message to the user
+                    Log.e(TAG, "Camera permission denied.");
+                }
+            });
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        detector.clear();
-        cameraExecutor.shutdown();
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+        detector.clear(); // Clear any resources held by your detector
+        cameraExecutor.shutdown(); // Shutdown the executor service
+
     }
+
+    @Override
+    public void onBackPressed() {
+        // Stop image analysis and release resources
+        if (imageAnalyzer != null) {
+            imageAnalyzer.clearAnalyzer(); // Custom method to clear the image analyzer
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // Stop image analysis and release resources
+            if (imageAnalyzer != null) {
+                imageAnalyzer.clearAnalyzer(); // Custom method to clear the image analyzer
+            }
+
+            finish(); // Optional: Finish the activity immediately
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -208,24 +213,11 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
 
     @Override
     public void onDetect(List<BoundingBox> boundingBoxes, long inferenceTime) {
+
         runOnUiThread(() -> {
             binding.inferenceTime.setText(inferenceTime + "ms");
             binding.overlay.setResults(boundingBoxes);
             binding.overlay.invalidate();
-
-            StringBuilder detectedLabels = new StringBuilder();
-            for (BoundingBox box : boundingBoxes) {
-                detectedLabels.append(box.getClsName()).append(", ");
-            }
-            if (detectedLabels.length() > 0) {
-                detectedLabels.setLength(detectedLabels.length() - 2);
-            }
-
-            Log.d(TAG, "Detected Labels: " + detectedLabels.toString());
-
-//            Intent intent = new Intent(FoodRecognitionActivity.this, ResultActivity.class);
-//            intent.putExtra("DETECTED_LABELS", detectedLabels.toString());
-//            startActivity(intent);
         });
     }
 }

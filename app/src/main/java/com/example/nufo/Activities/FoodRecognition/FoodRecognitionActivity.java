@@ -1,40 +1,60 @@
 package com.example.nufo.Activities.FoodRecognition;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
+import com.example.nufo.Adapters.DetectNamesAdapter;
+import com.example.nufo.Helpers.DiaryHelperClass;
+import com.example.nufo.Listeners.OnDishSelectedListener;
+import com.example.nufo.Listeners.SearchIngredientListener;
+import com.example.nufo.Models.Result;
+import com.example.nufo.Models.SearchIngredientApiResponse;
 import com.example.nufo.R;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.nufo.RequestManager;
 import com.example.nufo.databinding.ActivityFoodRecognitionBinding;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FoodRecognitionActivity extends AppCompatActivity implements Detector.DetectorListener {
 
@@ -50,7 +70,16 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
 
     private static final String TAG = "Camera";
     private static final int REQUEST_CODE_PERMISSIONS = 10;
-    private static final String[] REQUIRED_PERMISSIONS = { Manifest.permission.CAMERA };
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private Button captureButton;
+    private Map<String, AtomicInteger> detectedClassCounts = new HashMap<>();
+    RequestManager requestManager;
+    DatabaseReference reference;
+    FirebaseDatabase database;
+    DetectNamesAdapter adapter;
+
+    Dialog logDialog;
+    Button buttonBreakfast, buttonLunch, buttonDinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +91,14 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
 
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String uid = auth.getCurrentUser().getUid();
+
+        // Initialize FirebaseDatabase
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("users").child(uid);
+
+
         detector = new Detector(this, Constants.MODEL_PATH, Constants.LABELS_PATH, this);
         detector.setup();
 
@@ -72,6 +109,8 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor();
+        captureButton = findViewById(R.id.capture_button);
+        captureButton.setOnClickListener(v -> captureDetectedObjects());
     }
 
     private void startCamera() {
@@ -84,6 +123,7 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             }
         }, ContextCompat.getMainExecutor(this));
     }
+
 
     private void bindCameraUseCases() {
         if (cameraProvider == null) {
@@ -138,6 +178,7 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             Log.e(TAG, "Use case binding failed", e);
         }
     }
+
     private boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -193,7 +234,100 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         return super.onOptionsItemSelected(item);
     }
 
+    private void captureDetectedObjects() {
+        showBottomSheet(new ArrayList<>(detectedClassCounts.keySet())); // Show the bottom sheet with detected objects
+    }
 
+    private void showBottomSheet(List<String> classNames) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_layout_recognition, null);
+        RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recycler_view_labels);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        requestManager = new RequestManager(this);
+
+        // Create a list to collect all matched results
+        List<Result> matchedNames = new ArrayList<>();
+
+        if (adapter == null) {
+            adapter = new DetectNamesAdapter(FoodRecognitionActivity.this, matchedNames, requestManager, detectedClassCounts);
+        }
+        recyclerView.setAdapter(adapter);
+
+        logDialog = new Dialog(FoodRecognitionActivity.this);
+        logDialog.setContentView(R.layout.log_food_category_food_recognition);
+        logDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        logDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.log_dialog_bg));
+        logDialog.setCancelable(true);
+
+        buttonBreakfast = logDialog.findViewById(R.id.button_category_breakfast_food_recognition);
+        buttonLunch = logDialog.findViewById(R.id.button_category_lunch_food_recognition);
+        buttonDinner = logDialog.findViewById(R.id.button_category_dinner_food_recognition);
+
+        for (String classname : classNames) {
+            int count = detectedClassCounts.get(classname).get();
+            requestManager.searchIngredient(new SearchIngredientListener() {
+                @Override
+                public void didFetch(SearchIngredientApiResponse response, String message) {
+                    // Add all matched names to the list
+                    matchedNames.addAll(response.results);
+                    adapter.notifyDataSetChanged();
+
+                    bottomSheetView.findViewById(R.id.button_detected_logFood).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            List<DiaryHelperClass> selectedDishes = adapter.getSelectedDishes();
+
+                            for(Result matchname : matchedNames)
+                            {
+                                Log.d("Food Detect", matchname.name);
+                            }
+
+                            StringBuilder logMessage = new StringBuilder("Selected dishes: ");
+                            for (DiaryHelperClass dish : selectedDishes) {
+                                listener.onDishSelected(dish);
+                            }
+                            logDialog.show();
+                        }
+                    });
+                    buttonBreakfast.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            logSelectedDishes("Breakfast");
+                            Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    buttonLunch.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            logSelectedDishes("Lunch");
+                            Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                    buttonDinner.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            logSelectedDishes("Dinner");
+                            Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                }
+
+                @Override
+                public void didError(String message) {
+
+                }
+            }, classname);
+
+        }
+
+        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
+    }
 
     @Override
     protected void onResume() {
@@ -212,6 +346,15 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
 
     @Override
     public void onDetect(List<BoundingBox> boundingBoxes, long inferenceTime) {
+        detectedClassCounts.clear();
+        for (BoundingBox box : boundingBoxes) {
+            String className = box.getClsName();
+            if (detectedClassCounts.containsKey(className)) {
+                detectedClassCounts.get(className).incrementAndGet();
+            } else {
+                detectedClassCounts.put(className, new AtomicInteger(1));
+            }
+        }
 
         runOnUiThread(() -> {
             binding.inferenceTime.setText(inferenceTime + "ms");
@@ -219,4 +362,46 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             binding.overlay.invalidate();
         });
     }
+
+    private String getCurrentDate() {
+        // SimpleDateFormat to get the current date
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
+    private void logSelectedDishes(String mealType) {
+        List<DiaryHelperClass> selectedDishes = adapter.getSelectedDishes();
+
+        DatabaseReference foodLogRef = reference.child("foodLog").child(mealType).child(getCurrentDate());
+
+        for (DiaryHelperClass dish : selectedDishes) {
+            DatabaseReference newFoodRef = foodLogRef.push();
+            String foodName = dish.getFoodName();
+            newFoodRef.setValue(dish).addOnSuccessListener(aVoid->
+            {
+                Toast.makeText(this, foodName + " logged for " + mealType, Toast.LENGTH_SHORT).show();
+            });
+
+        }
+
+    }
+
+    private final OnDishSelectedListener listener = new OnDishSelectedListener() {
+        @Override
+        public void onDishSelected(DiaryHelperClass dish) {
+            String dishName = dish.getFoodName();
+            String dishCal = String.valueOf(dish.getCaloriesValue());
+            String count = String.valueOf(dish.getAmount());
+            String dishCarb = String.valueOf(dish.getCarbohydratesValue());
+            String dishFat = String.valueOf(dish.getFatsValue());
+            String dishProtein = String.valueOf(dish.getProteinValue());
+            Log.d("Food Detection Info", "FoodName " + dishName + " FoodAmount" + count + " FoodCal" + dishCal + " Fat " + dishFat + " Protein " + dishProtein );
+        }
+
+        @Override
+        public void onDishDeselected(DiaryHelperClass dish) {
+
+        }
+    };
+
 }

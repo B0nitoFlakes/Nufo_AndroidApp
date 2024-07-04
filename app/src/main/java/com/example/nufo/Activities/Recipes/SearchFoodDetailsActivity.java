@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
 import com.example.nufo.Activities.MainActivity;
 import com.example.nufo.Adapters.IngredientsAdapter;
 import com.example.nufo.Helpers.DiaryHelperClass;
@@ -110,6 +111,8 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Breakfast");
+                Intent intent = new Intent(SearchFoodDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -117,6 +120,8 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Lunch");
+                Intent intent = new Intent(SearchFoodDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -124,6 +129,8 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Dinner");
+                Intent intent = new Intent(SearchFoodDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 

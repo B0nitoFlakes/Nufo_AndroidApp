@@ -4,7 +4,7 @@ import com.example.nufo.Listeners.FoodItem;
 
 import java.util.ArrayList;
 
-public class Ingredient implements FoodItem {
+public class Ingredient{
     public int id;
     public String name;
     public double amount;
@@ -13,8 +13,4 @@ public class Ingredient implements FoodItem {
     public String localizedName;
     public String image;
 
-    @Override
-    public int getType() {
-        return 0;
-    }
 }

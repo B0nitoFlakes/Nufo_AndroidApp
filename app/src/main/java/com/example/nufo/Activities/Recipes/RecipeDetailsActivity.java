@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
+import com.example.nufo.Activities.FoodRecognition.FoodRecognitionActivity;
 import com.example.nufo.Activities.MainActivity;
 import com.example.nufo.Adapters.IngredientsAdapter;
 import com.example.nufo.Adapters.InstructionsAdapter;
@@ -117,6 +118,8 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Breakfast");
+                Intent intent = new Intent(RecipeDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -124,6 +127,8 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Lunch");
+                Intent intent = new Intent(RecipeDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -131,6 +136,8 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logFood("Dinner");
+                Intent intent = new Intent(RecipeDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
             }
         });
 

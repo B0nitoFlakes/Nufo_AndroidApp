@@ -56,6 +56,8 @@ public class FoodDiaryActivity extends AppCompatActivity {
     DatabaseReference reference, calorieReference;
     Dialog optionDialog;
 
+    double calorieGoal;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,7 +227,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 YourInfoHelperClass yourInfoHelperClass = dataSnapshot.getValue(YourInfoHelperClass.class);
                 if (yourInfoHelperClass != null) {
-                    double calorieGoal = yourInfoHelperClass.getGoal();
+                    calorieGoal = yourInfoHelperClass.getGoal();
                     textView_diary_calorieGoals.setText(String.valueOf(calorieGoal));
                 }
             }
@@ -287,10 +289,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
         textView_diary_totalFoodCal.setText(String.format(Locale.getDefault(), "%.2f", totalCalories));
         textView_diary_caloriesConsumed.setText(String.format(Locale.getDefault(), "%.2f", totalCalories));
 
-
-        String goalText = textView_diary_calorieGoals.getText().toString();
-
-        goals = Double.parseDouble(goalText);
+        goals = calorieGoal;
         calorieRemain = goals - totalCalories;
         textView_diary_calorieGoals.setText(String.format(Locale.getDefault(), "%.2f", goals));
         textView_diary_caloriesLeft.setText(String.format(Locale.getDefault(), "%.2f", calorieRemain));

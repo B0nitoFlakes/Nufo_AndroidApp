@@ -21,7 +21,7 @@ public class AccountHelperClass {
         this.email = email;
     }
 
-    public AccountHelperClass(String username, String email) {
+    public AccountHelperClass(String username, String email, String password) {
         this.username = username;
         this.email = email;
     }

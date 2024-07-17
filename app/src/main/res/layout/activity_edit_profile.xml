@@ -131,8 +131,8 @@
 
                           <Spinner
                               android:id="@+id/genderSpinner"
-                              android:layout_width="100dp"
-                              android:layout_height="50dp"
+                              android:layout_width="wrap_content"
+                              android:layout_height="wrap_content"
                               android:padding="10sp"
                               android:textColor="@color/darkGreen" />
 
@@ -227,6 +227,34 @@
                                 android:layout_weight="1"
                                 android:textAlignment="textStart"
                                 tools:ignore="HardcodedText" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp"
+                            android:layout_marginBottom="5dp">
+
+                            <TextView
+                                android:layout_width="60dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:text="Gender"
+                                android:textColor="@color/darkGreen"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText,RtlHardcoded" />
+
+                            <Spinner
+                                android:id="@+id/weightGoalSpinner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="10sp"
+                                android:entries="@array/weight_goals"
+                                android:textColor="@color/darkGreen" />
 
                         </LinearLayout>
 

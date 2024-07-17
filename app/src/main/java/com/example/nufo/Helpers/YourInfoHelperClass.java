@@ -2,10 +2,18 @@ package com.example.nufo.Helpers;
 
 public class YourInfoHelperClass {
 
-    String name, gender;
+    String name, gender, weightGoal;
     float age, height, weight;
     float activityLevel;
     double bmr, goal;
+
+    public String getWeightGoal() {
+        return weightGoal;
+    }
+
+    public void setWeightGoal(String weightGoal) {
+        this.weightGoal = weightGoal;
+    }
 
     public float getActivityLevel() {
         return activityLevel;
@@ -70,9 +78,10 @@ public class YourInfoHelperClass {
         this.goal = goal;
     }
 
-    public YourInfoHelperClass(String name, String gender, float age, float height, float weight, float activityLevel, double bmr, double goal) {
+    public YourInfoHelperClass(String name, String gender, String weightGoal, float age, float height, float weight, float activityLevel, double bmr, double goal) {
         this.name = name;
         this.gender = gender;
+        this.weightGoal = weightGoal;
         this.age = age;
         this.height = height;
         this.activityLevel = activityLevel;

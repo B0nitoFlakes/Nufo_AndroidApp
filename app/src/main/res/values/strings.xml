@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Nufo</string>
-<!--    <string name="api_key">94d925673caf4c4eb3fb30bc91cad496</string>-->
+    <!--    <string name="api_key">94d925673caf4c4eb3fb30bc91cad496</string>-->
     <string name="api_key">df49adb439d749c38d48dbc0133d5dad</string>
 
     <string-array name="tags">
@@ -18,8 +18,12 @@
         <item>fingerfood</item>
         <item>snack</item>
         <item>drink</item>
+    </string-array>
 
-
+    <string-array name="weight_goals">
+        <item>weight loss</item>
+        <item>weight maintenance</item>
+        <item>weight gain</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

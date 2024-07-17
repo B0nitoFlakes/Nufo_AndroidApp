@@ -17,8 +17,8 @@
         android:icon="@drawable/baseline_book_24"/>
 
     <item
-        android:id="@+id/more"
-        android:title="More"
+        android:id="@+id/settings"
+        android:title="Settings"
         android:icon="@drawable/baseline_more_24"/>
 
 

@@ -23,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    TextView textView_profile_name, textView_profile_age, textView_profile_gender, textView_profile_height, textView_profile_weight, textView_profile_bmr, textView_profile_goal, textView_profile_userName, textView_profile_email, textView_profile_password;
+    TextView textView_profile_name, textView_profile_age, textView_profile_gender, textView_profile_height, textView_profile_weight, textView_profile_goal;
     FirebaseDatabase database;
     FirebaseAuth auth;
     DatabaseReference reference, personalReference;
@@ -78,7 +78,6 @@ public class ProfileActivity extends AppCompatActivity {
         textView_profile_gender = findViewById(R.id.textView_profile_gender);
         textView_profile_height = findViewById(R.id.textView_profile_height);
         textView_profile_weight = findViewById(R.id.textView_profile_weight);
-        textView_profile_bmr = findViewById(R.id.textView_profile_bmr);
         textView_profile_goal = findViewById(R.id.textView_profile_goal);
         button_update_profile = findViewById(R.id.button_update_profile);
 
@@ -87,26 +86,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void dataRetrieval(){
-//        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                HelperClass helperClass = dataSnapshot.getValue(HelperClass.class);
-//                if (helperClass != null) {
-//                    String userName = helperClass.getUsername();
-//                    String userEmail = helperClass.getEmail();
-//                    String userPass = helperClass.getPassword();
-//
-//                    textView_profile_userName.setText(userName);
-//                    textView_profile_email.setText(userEmail);
-//                    textView_profile_password.setText(userPass);
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w(TAG, "loadPost:onCancelled", error.toException());
-//            }
-//        });
 
         personalReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -118,16 +97,16 @@ public class ProfileActivity extends AppCompatActivity {
                     String age = String.valueOf(yourInfoHelperClass.getAge());
                     String height = String.valueOf(yourInfoHelperClass.getHeight());
                     String weight = String.valueOf(yourInfoHelperClass.getWeight());
-                    String bmr = String.valueOf(yourInfoHelperClass.getBmr());
-                    String goal = String.valueOf(yourInfoHelperClass.getGoal());
+                    double goal = yourInfoHelperClass.getGoal();
+
+                    String formatGoal = String.format("%.2f", goal);
 
                     textView_profile_name.setText(name);
                     textView_profile_age.setText(age);
                     textView_profile_gender.setText(gender);
                     textView_profile_height.setText(height);
                     textView_profile_weight.setText(weight);
-                    textView_profile_bmr.setText(bmr);
-                    textView_profile_goal.setText(goal);
+                    textView_profile_goal.setText(formatGoal);
 
                 }
             }

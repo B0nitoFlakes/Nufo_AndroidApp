@@ -19,7 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Nufo"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Activities.ProfileAndAccount.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".Activities.MainActivity"/>
+        <activity
+            android:name=".Activities.ProfileAndAccount.AccountActivity"
+            android:exported="false"
+            android:parentActivityName=".Activities.ProfileAndAccount.SettingsActivity"/>
         <activity
             android:name=".Activities.FoodRecognition.FoodRecognitionActivity"
             android:exported="false"
@@ -58,7 +65,7 @@
         <activity
             android:name=".Activities.ProfileAndAccount.ProfileActivity"
             android:exported="false"
-            android:parentActivityName=".Activities.MainActivity" />
+            android:parentActivityName=".Activities.ProfileAndAccount.SettingsActivity" />
         <activity
             android:name=".Activities.ProfileAndAccount.LoginActivity"
             android:exported="false" />

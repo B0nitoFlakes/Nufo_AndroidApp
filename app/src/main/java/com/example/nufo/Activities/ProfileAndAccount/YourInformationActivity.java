@@ -2,6 +2,7 @@ package com.example.nufo.Activities.ProfileAndAccount;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +38,7 @@ public class YourInformationActivity extends AppCompatActivity {
         nameA = findViewById(R.id.nameEditText);
         doneInput = findViewById(R.id.donePersonalInfoButton);
         Spinner spinner = findViewById(R.id.genderSpinner);
+        Spinner goalSpinner = findViewById(R.id.weightGoalSpinner);
 
         RadioButton r1 = findViewById(R.id.r1);
         RadioButton r2 = findViewById(R.id.r2);
@@ -51,8 +53,17 @@ public class YourInformationActivity extends AppCompatActivity {
         r5.setOnCheckedChangeListener((compoundButton, isChecked) -> updateActivityLevel(1.90f));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(YourInformationActivity.this, R.layout.custom_spinner, gender);
-        adapter.setDropDownViewResource(R.layout.custom_spinner);
+        adapter.setDropDownViewResource(R.layout.spinner_inner_text);
         spinner.setAdapter(adapter);
+
+
+        ArrayAdapter<CharSequence> goalAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.weight_goals,
+                R.layout.custom_spinner
+        );
+        goalAdapter.setDropDownViewResource(R.layout.spinner_inner_text);
+        goalSpinner.setAdapter(goalAdapter);
 
         doneInput.setOnClickListener(view -> calculateBMR());
     }
@@ -60,6 +71,11 @@ public class YourInformationActivity extends AppCompatActivity {
     private void updateActivityLevel(float level) {
         activityLevel = level;
     }
+
+    private  void updateGoal(double endGoal){
+        goal = endGoal;
+    }
+
 
     private void calculateBMR() {
         try {
@@ -69,6 +85,7 @@ public class YourInformationActivity extends AppCompatActivity {
             float age = Float.parseFloat(ageA.getText().toString());
 
             String selectedGender = gender[0]; // Default to male if nothing selected
+
             if (findViewById(R.id.genderSpinner) != null) {
                 selectedGender = ((Spinner) findViewById(R.id.genderSpinner)).getSelectedItem().toString();
             }
@@ -78,9 +95,19 @@ public class YourInformationActivity extends AppCompatActivity {
             } else if (selectedGender.equals("female")) {
                 bmr = (weight * 10) + (6.25 * height) - (5 * age) - 161;
             }
-            goal = bmr * activityLevel;
 
-            YourInfoHelperClass yourInfoHelperClass = new YourInfoHelperClass(name, selectedGender, age, height, weight, activityLevel, bmr, goal);
+            goal = bmr * activityLevel;
+            Log.d("BMR_CALC", "Goal before adjustment: " + goal);
+            String selectedWeightGoal = ((Spinner) findViewById(R.id.weightGoalSpinner)).getSelectedItem().toString();
+            if(selectedWeightGoal.equals("weight loss"))
+            {
+                goal = goal - 500;
+            } else if (selectedWeightGoal.equals("weight gain")) {
+                goal = goal + 500;
+            }
+            Log.d("BMR_CALC", "Goal after adjustment: " + goal);
+
+            YourInfoHelperClass yourInfoHelperClass = new YourInfoHelperClass(name, selectedGender, selectedWeightGoal, age, height, weight, activityLevel, bmr, goal);
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(uid);

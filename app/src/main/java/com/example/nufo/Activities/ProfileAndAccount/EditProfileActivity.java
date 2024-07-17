@@ -32,7 +32,7 @@ public class EditProfileActivity extends AppCompatActivity {
     Button button_save_profile, buttonHome_editProfile;
     RadioButton r1, r2, r3, r4, r5;
     RadioGroup radioGroup;
-    Spinner spinner;
+    Spinner spinner, weightGoalSpinner;
     String[] gender = {"male", "female"};
     FirebaseDatabase database;
     FirebaseAuth auth;
@@ -40,6 +40,7 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseUser user;
     String uid;
     float activityLevel = 1.0f;
+    double goal;
     private static final String TAG = "EditProfileActivity";
 
     @Override
@@ -95,6 +96,14 @@ public class EditProfileActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(R.layout.custom_spinner);
         spinner.setAdapter(adapter);
 
+        ArrayAdapter<CharSequence> goalAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.weight_goals,
+                R.layout.custom_spinner
+        );
+        goalAdapter.setDropDownViewResource(R.layout.spinner_inner_text);
+        weightGoalSpinner.setAdapter(goalAdapter);
+
         button_save_profile.setOnClickListener(view -> saveProfile());
 
         buttonHome_editProfile.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +129,7 @@ public class EditProfileActivity extends AppCompatActivity {
         button_save_profile = findViewById(R.id.button_save_profile);
         buttonHome_editProfile = findViewById(R.id.buttonHome_editProfile);
         spinner = findViewById(R.id.genderSpinner);
+        weightGoalSpinner = findViewById(R.id.weightGoalSpinner);
 
 
     }
@@ -132,6 +142,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 YourInfoHelperClass yourInfoHelperClass = dataSnapshot.getValue(YourInfoHelperClass.class);
                 if(yourInfoHelperClass !=null) {
                     String gender = yourInfoHelperClass.getGender();
+                    String weightGoal = yourInfoHelperClass.getWeightGoal();
                     String name = yourInfoHelperClass.getName();
                     String age = String.valueOf(yourInfoHelperClass.getAge());
                     String height = String.valueOf(yourInfoHelperClass.getHeight());
@@ -144,6 +155,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
                     int spinnerPosition = ((ArrayAdapter<String>) spinner.getAdapter()).getPosition(gender);
                     spinner.setSelection(spinnerPosition);
+                    int spinnerWeightPosition = ((ArrayAdapter<String>) weightGoalSpinner.getAdapter()).getPosition(weightGoal);
+                    weightGoalSpinner.setSelection(spinnerWeightPosition);
                 }
             }
 
@@ -170,7 +183,6 @@ public class EditProfileActivity extends AppCompatActivity {
             float ageValue = Float.parseFloat(age);
             float heightValue = Float.parseFloat(height);
             float weightValue = Float.parseFloat(weight);
-
             double bmr;
             if (selectedGender.equals("male")) {
                 bmr = (weightValue * 10) + (6.25 * heightValue) + 5 - (5 * ageValue);
@@ -178,9 +190,18 @@ public class EditProfileActivity extends AppCompatActivity {
                 bmr = (weightValue * 10) + (6.25 * heightValue) - (5 * ageValue) - 161;
             }
 
-            double goal = bmr * activityLevel;
+            goal = bmr * activityLevel;
+            Log.d("BMR_CALC", "Goal before adjustment: " + goal);
+            String selectedWeightGoal = ((Spinner) findViewById(R.id.weightGoalSpinner)).getSelectedItem().toString();
+            if(selectedWeightGoal.equals("weight loss"))
+            {
+                goal = goal - 500;
+            } else if (selectedWeightGoal.equals("weight gain")) {
+                goal = goal + 500;
+            }
+            Log.d("BMR_CALC", "Goal after adjustment: " + goal);
 
-            YourInfoHelperClass updatedInfo = new YourInfoHelperClass(name, selectedGender, ageValue, heightValue, weightValue, activityLevel, bmr, goal);
+            YourInfoHelperClass updatedInfo = new YourInfoHelperClass(name, selectedGender, selectedWeightGoal,ageValue, heightValue, weightValue, activityLevel, bmr, goal);
 
             personalReference.setValue(updatedInfo).addOnSuccessListener(aVoid -> {
                 Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();

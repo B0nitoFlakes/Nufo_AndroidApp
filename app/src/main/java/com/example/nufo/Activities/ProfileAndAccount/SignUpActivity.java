@@ -17,8 +17,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -55,47 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String pass = signUpPassword.getText().toString();
                 String rePass = reEnterSignUpPassword.getText().toString();
 
-                if(email.isEmpty())
-                {
-                    signUpEmail.setError("It is empty");
-                }
-                else if(pass.isEmpty())
-                {
-                    signUpPassword.setError("Empty");
-                }
-                else if(rePass.isEmpty())
-                {
-                    reEnterSignUpPassword.setError("Oi empty");
-                }
-                else if (!pass.equals(rePass))
-                {
-                    signUpPassword.setError("Need to match");
-                    reEnterSignUpPassword.setError("Need to Match");
-                }
-                else
-                {
-                    auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful())
-                            {
-                                String uid = auth.getCurrentUser().getUid();
-                                AccountHelperClass accountHelperClass = new AccountHelperClass(username, email);
-                                reference.child(uid).setValue(accountHelperClass);
-
-                                Toast.makeText(SignUpActivity.this, "You have sign up successfully", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignUpActivity.this, YourInformationActivity.class);
-                                startActivity(intent);
-                            }
-                            else
-                            {
-                                Toast.makeText(SignUpActivity.this, "Sign up failed" +task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-
-                }
+                inputValidation(username, email, pass, rePass);
             }
         });
 
@@ -107,4 +73,84 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void checkCredentialsExist(String username, String email, String pass) {
+        reference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    signUpUsername.setError("Username already exists");
+                    signUpUsername.requestFocus();
+                } else {
+                    auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful())
+                            {
+                                String uid = auth.getCurrentUser().getUid();
+                                AccountHelperClass accountHelperClass = new AccountHelperClass(username, email, pass);
+                                reference.child(uid).setValue(accountHelperClass);
+
+                                Toast.makeText(SignUpActivity.this, "You have sign up successfully", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignUpActivity.this, YourInformationActivity.class);
+                                startActivity(intent);
+                            }
+                            else
+                            {
+                                signUpEmail.setError("Email Has been used by another account");
+                                signUpEmail.requestFocus();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(SignUpActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void inputValidation(String username, String email, String pass, String rePass)
+    {
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,}$";
+        Pattern pattern = Pattern.compile(passwordPattern);
+        Matcher matcher = pattern.matcher(pass);
+
+        if(email.isEmpty())
+        {
+            signUpEmail.setError("It is empty");
+            signUpEmail.requestFocus();
+        }
+        else if(pass.isEmpty())
+        {
+            signUpPassword.setError("Password is empty");
+            signUpPassword.requestFocus();
+        }
+        else if(rePass.isEmpty())
+        {
+            reEnterSignUpPassword.setError("Reenter Password is empty");
+            reEnterSignUpPassword.requestFocus();
+        }
+        else if(!matcher.matches())
+        {
+            signUpPassword.setError("Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one special character, and one number");
+            signUpPassword.requestFocus();
+            reEnterSignUpPassword.setError("Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one special character, and one number");
+            reEnterSignUpPassword.requestFocus();
+        }
+        else if (!pass.equals(rePass))
+        {
+            signUpPassword.setError("Need to match");
+            signUpPassword.requestFocus();
+            reEnterSignUpPassword.setError("Need to Match");
+            reEnterSignUpPassword.requestFocus();
+        }
+        else
+        {
+            checkCredentialsExist(username,email, pass);
+        }
+    }
+
 }

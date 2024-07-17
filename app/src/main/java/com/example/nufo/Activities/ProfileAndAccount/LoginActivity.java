@@ -179,7 +179,6 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     for(DataSnapshot userSnapshot : snapshot.getChildren())
                     {
-                        String userId = userSnapshot.getKey();
                         String email = userSnapshot.child("email").getValue(String.class);
 
                             auth.signInWithEmailAndPassword(email, userPass).addOnCompleteListener(task -> {

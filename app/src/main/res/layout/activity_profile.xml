@@ -198,34 +198,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="BMR"
-                        android:textColor="@color/darkGreen"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:ignore="HardcodedText,RtlHardcoded" />
-
-                    <TextView
-                        android:id="@+id/textView_profile_bmr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="your BMR will shown here"
-                        android:textAlignment="textStart"
-                        android:textColor="@color/darkGreen"
-                        tools:ignore="HardcodedText" />
-
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

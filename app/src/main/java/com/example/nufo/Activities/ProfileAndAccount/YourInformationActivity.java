@@ -20,23 +20,19 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class YourInformationActivity extends AppCompatActivity {
 
-    String[] gender = {"male", "female"};
-    EditText nameA, heightA, weightA, ageA;
-    Button doneInput;
-    float activityLevel = 1.0f; // Default activity level
-
-    double bmr, goal;
+    private String[] gender = {"male", "female"};
+    private EditText nameA, heightA, weightA, ageA;
+    private Button doneInput;
+    private float activityLevel = 1.0f; // Default activity level
+    private double bmr, goal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_your_information);
 
-        heightA = findViewById(R.id.heightEditText);
-        weightA = findViewById(R.id.weightEditText);
-        ageA = findViewById(R.id.ageEditText);
-        nameA = findViewById(R.id.nameEditText);
-        doneInput = findViewById(R.id.donePersonalInfoButton);
+        findViews();
+
         Spinner spinner = findViewById(R.id.genderSpinner);
         Spinner goalSpinner = findViewById(R.id.weightGoalSpinner);
 
@@ -67,16 +63,17 @@ public class YourInformationActivity extends AppCompatActivity {
 
         doneInput.setOnClickListener(view -> calculateBMR());
     }
-
+    private void findViews()
+    {
+        heightA = findViewById(R.id.heightEditText);
+        weightA = findViewById(R.id.weightEditText);
+        ageA = findViewById(R.id.ageEditText);
+        nameA = findViewById(R.id.nameEditText);
+        doneInput = findViewById(R.id.donePersonalInfoButton);
+    }
     private void updateActivityLevel(float level) {
         activityLevel = level;
     }
-
-    private  void updateGoal(double endGoal){
-        goal = endGoal;
-    }
-
-
     private void calculateBMR() {
         try {
             String name = nameA.getText().toString();
@@ -97,7 +94,7 @@ public class YourInformationActivity extends AppCompatActivity {
             }
 
             goal = bmr * activityLevel;
-            Log.d("BMR_CALC", "Goal before adjustment: " + goal);
+
             String selectedWeightGoal = ((Spinner) findViewById(R.id.weightGoalSpinner)).getSelectedItem().toString();
             if(selectedWeightGoal.equals("weight loss"))
             {
@@ -105,7 +102,6 @@ public class YourInformationActivity extends AppCompatActivity {
             } else if (selectedWeightGoal.equals("weight gain")) {
                 goal = goal + 500;
             }
-            Log.d("BMR_CALC", "Goal after adjustment: " + goal);
 
             YourInfoHelperClass yourInfoHelperClass = new YourInfoHelperClass(name, selectedGender, selectedWeightGoal, age, height, weight, activityLevel, bmr, goal);
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -119,9 +115,6 @@ public class YourInformationActivity extends AppCompatActivity {
             }).addOnFailureListener(e -> {
                 Toast.makeText(YourInformationActivity.this, "Failed to save personal information: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
-
-
-
         } catch (NumberFormatException e) {
             Toast.makeText(YourInformationActivity.this, "Please enter valid numeric values for height, weight, and age", Toast.LENGTH_SHORT).show();
         }

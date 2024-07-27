@@ -27,20 +27,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class EditProfileActivity extends AppCompatActivity {
-
-    EditText editText_profile_name, editText_profile_age, editText_profile_weight, editText_profile_height;
-    Button button_save_profile, buttonHome_editProfile;
-    RadioButton r1, r2, r3, r4, r5;
-    RadioGroup radioGroup;
-    Spinner spinner, weightGoalSpinner;
-    String[] gender = {"male", "female"};
-    FirebaseDatabase database;
-    FirebaseAuth auth;
-    DatabaseReference reference, personalReference;
-    FirebaseUser user;
-    String uid;
-    float activityLevel = 1.0f;
-    double goal;
+    private  String uid;
+    private EditText editText_profile_name, editText_profile_age, editText_profile_weight, editText_profile_height;
+    private Button button_save_profile, buttonHome_editProfile;
+    private RadioGroup radioGroup;
+    private Spinner spinner, weightGoalSpinner;
+    private String[] gender = {"male", "female"};
+    private FirebaseDatabase database;
+    private FirebaseAuth auth;
+    private DatabaseReference reference, personalReference;
+    private FirebaseUser user;
+    private float activityLevel = 1.0f;
+    private double goal;
     private static final String TAG = "EditProfileActivity";
 
     @Override
@@ -115,11 +113,9 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
     }
-
     private void updateActivityLevel(float level) {
         activityLevel = level;
     }
-
     private void findViews()
     {
         editText_profile_name = findViewById(R.id.editText_profile_name);
@@ -133,7 +129,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
 
     }
-
     private void populateData()
     {
         personalReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -166,7 +161,6 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
     }
-
     private void saveProfile() {
         String name = editText_profile_name.getText().toString();
         String age = editText_profile_age.getText().toString();

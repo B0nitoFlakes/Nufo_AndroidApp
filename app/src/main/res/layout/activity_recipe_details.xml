@@ -188,15 +188,14 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView_meal_summary"
+                android:text="Instructions"
+                android:textStyle="bold"
+                android:textColor="@color/darkGreen"
+                android:textSize="18sp"
+                android:padding="8dp"
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                android:maxLines="5"
-                android:text="Summary"
-                android:textColor="@color/darkGreen"
-                android:textSize="14sp"
                 tools:ignore="HardcodedText" />
 
             <androidx.recyclerview.widget.RecyclerView

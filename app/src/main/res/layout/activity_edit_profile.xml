@@ -12,16 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="119dp"
-                android:layout_height="115dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="48dp"
-                android:background="@drawable/circular_bg"
-                android:src="@drawable/baseline_person_24"/>
-
-
                 <androidx.cardview.widget.CardView
                     android:layout_marginTop="70dp"
                     android:layout_width="match_parent"
@@ -242,7 +232,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="8dp"
                                 android:layout_marginBottom="8dp"
-                                android:text="Gender"
+                                android:text="Goal"
                                 android:textColor="@color/darkGreen"
                                 android:textSize="15sp"
                                 android:textStyle="bold"

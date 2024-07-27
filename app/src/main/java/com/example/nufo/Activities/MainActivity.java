@@ -45,13 +45,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    String uid;
-    RequestManager manager;
-    RecyclerView recycler_home_recipe;
-    ActivityMainBinding binding;
-    List<String> tags = new ArrayList<>();
-    HomeRecipesAdapter homeRecipesAdapter;
-    ProgressDialog dialog;
+    private RequestManager manager;
+    private RecyclerView recycler_home_recipe;
+    private ActivityMainBinding binding;
+    private List<String> tags = new ArrayList<>();
+    private HomeRecipesAdapter homeRecipesAdapter;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()){
                 case R.id.home:
-                    Intent searchFoodintent = new Intent(MainActivity.this, SearchFoodActivity.class);
-                    startActivity(searchFoodintent);
+                    Intent homeIntent = new Intent(MainActivity.this, MainActivity.class);
+                    startActivity(homeIntent);
                     break;
 
                 case R.id.recipe:
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
-
     private final RandomRecipeResponseListener randomRecipeResponseListener = new RandomRecipeResponseListener() {
         @Override
         public void didFetch(RandomRecipeApiResponse response, String message) {
@@ -124,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
     private final RecipeClickListener recipeClickListener = new RecipeClickListener() {
         @Override
         public void onRecipeClicked(String id) {

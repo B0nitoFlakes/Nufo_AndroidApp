@@ -17,9 +17,20 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
+                android:id="@+id/textView_options_food_recognition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Choose an option"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:textColor="@color/darkGreen" />
+
+            <TextView
+                android:id="@+id/textView_done_food_recognition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click Done to Log Food"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:padding="10dp"
@@ -54,6 +65,17 @@
                 android:elevation="10dp"
                 android:layout_marginBottom="15dp"
                 android:text="Dinner"
+                tools:ignore="HardcodedText"/>
+
+            <Button
+                android:id="@+id/button_category_done_food_recognition"
+                android:layout_width="160dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:layout_marginBottom="15dp"
+                android:text="Done"
                 tools:ignore="HardcodedText"/>
 
 

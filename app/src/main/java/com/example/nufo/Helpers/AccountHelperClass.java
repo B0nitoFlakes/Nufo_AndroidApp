@@ -2,8 +2,12 @@ package com.example.nufo.Helpers;
 
 public class AccountHelperClass {
 
+    public String email, username;
 
-    String email, username;
+    public AccountHelperClass(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
 
     public String getUsername() {
         return username;
@@ -21,10 +25,7 @@ public class AccountHelperClass {
         this.email = email;
     }
 
-    public AccountHelperClass(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-    }
+
 
 
 

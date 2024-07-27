@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.widget.SearchView;
+
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +15,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
+import com.example.nufo.Activities.FoodRecognition.FoodRecognitionActivity;
+import com.example.nufo.Activities.MainActivity;
 import com.example.nufo.Adapters.RandomRecipeAdapter;
 import com.example.nufo.Adapters.SearchFoodAdapter;
 import com.example.nufo.Adapters.SearchFoodRecipeAdapter;
@@ -27,15 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFoodActivity extends AppCompatActivity {
-
-    ProgressDialog dialog;
-    RequestManager manager;
-    RecyclerView recyclerView, recycler_searchFoodRandom;
-    SearchView searchView;
-    SearchFoodAdapter adapter;
-    SearchFoodRecipeAdapter searchFoodRecipeAdapter;
-    RandomRecipeAdapter randomRecipeAdapter;
-    List<String> tags = new ArrayList<>();
+    private String mealType;
+    private Button buttonHome_searchFoodActivity;
+    private ProgressDialog dialog;
+    private RequestManager manager;
+    private RecyclerView recyclerView, recycler_searchFoodRandom;
+    private SearchView searchView;
+    private SearchFoodAdapter adapter;
+    private SearchFoodRecipeAdapter searchFoodRecipeAdapter;
+    private List<String> tags = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +56,13 @@ public class SearchFoodActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_searchFood);
         searchView = findViewById(R.id.searchView_searchFood);
         recycler_searchFoodRandom = findViewById(R.id.recycler_searchFoodRandom);
+        buttonHome_searchFoodActivity = findViewById(R.id.buttonHome_searchFoodActivity);
+        mealType = getIntent().getStringExtra("mealType");
 
         dialog = new ProgressDialog(this);
         dialog.setTitle("Loading...");
 
         manager = new RequestManager(this);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new SearchFoodAdapter(this, new ArrayList<>(), null);
-        recyclerView.setAdapter(adapter);
-
-        recycler_searchFoodRandom.setLayoutManager(new LinearLayoutManager(this));
-        searchFoodRecipeAdapter = new SearchFoodRecipeAdapter(this, new ArrayList<>(), null);
-        recycler_searchFoodRandom.setAdapter(searchFoodRecipeAdapter);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -80,29 +80,35 @@ public class SearchFoodActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
 
+        buttonHome_searchFoodActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchFoodActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
     private final SearchIngredientListener searchIngredientListener = new SearchIngredientListener() {
         @Override
         public void didFetch(SearchIngredientApiResponse response, String message) {
             dialog.dismiss();
+            recyclerView.setLayoutManager(new LinearLayoutManager(SearchFoodActivity.this));
             adapter = new SearchFoodAdapter(SearchFoodActivity.this, response.results, recipeClickListener);
             recyclerView.setAdapter(adapter);
         }
-
         @Override
         public void didError(String message) {
             dialog.dismiss();
             Toast.makeText(SearchFoodActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
     private final RandomRecipeResponseListener randomRecipeResponseListener = new RandomRecipeResponseListener() {
         @Override
         public void didFetch(RandomRecipeApiResponse response, String message) {
             dialog.dismiss();
+            recycler_searchFoodRandom.setLayoutManager(new LinearLayoutManager(SearchFoodActivity.this));
             recycler_searchFoodRandom.setHasFixedSize(true);
-//            recycler_searchFoodRandom.setLayoutManager(new GridLayoutManager(SearchFoodActivity.this, 1));
             searchFoodRecipeAdapter = new SearchFoodRecipeAdapter(SearchFoodActivity.this, response.recipes, recipeClickListener1);
             recycler_searchFoodRandom.setAdapter(searchFoodRecipeAdapter);
         }
@@ -112,22 +118,22 @@ public class SearchFoodActivity extends AppCompatActivity {
             Toast.makeText(SearchFoodActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
     private final RecipeClickListener recipeClickListener = new RecipeClickListener() {
         @Override
         public void onRecipeClicked(String id) {
             startActivity(new Intent(SearchFoodActivity.this, SearchFoodDetailsActivity.class)
                     .putExtra("id", id)
-                    .putExtra("type", "ingredient"));
+                    .putExtra("type", "ingredient")
+                    .putExtra("mealType", mealType));
         }
     };
-
     private final RecipeClickListener recipeClickListener1 = new RecipeClickListener() {
         @Override
         public void onRecipeClicked(String id) {
             startActivity(new Intent(SearchFoodActivity.this, SearchFoodDetailsActivity.class)
                     .putExtra("id", id)
-                    .putExtra("type", "recipe"));
+                    .putExtra("type", "recipe")
+                    .putExtra("mealType", mealType));
         }
     };
 }

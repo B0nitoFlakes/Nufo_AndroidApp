@@ -38,21 +38,21 @@ import java.util.Locale;
 
 
 public class SearchFoodDetailsActivity extends AppCompatActivity {
-    String uid;
-    int id;
-    TextView textView_foodDetails_name, textView_foodDetails_calories, textView_foodDetails_carbohydrates, textView_foodDetails_fats, textView_foodDetails_protein;
-    RequestManager manager;
-    ProgressDialog dialog;
-    Button buttonHome_searchFoodDetails, buttonLogFood, buttonBreakfast, buttonLunch, buttonDinner;
-    Dialog logDialog;
-    EditText editText_category;
-    FirebaseDatabase database;
-    FirebaseAuth auth;
-    DatabaseReference reference;
-    double caloriesValue = 0.0;
-    double carbohydratesValue = 0.0;
-    double fatsValue = 0.0;
-    double proteinValue = 0.0;
+    private String uid, mealType;
+    private int id;
+    private TextView textView_foodDetails_name, textView_foodDetails_calories, textView_foodDetails_carbohydrates, textView_foodDetails_fats, textView_foodDetails_protein, textView_done, textView_option;
+    private RequestManager manager;
+    private ProgressDialog dialog;
+    private Button buttonHome_searchFoodDetails, buttonLogFood, buttonBreakfast, buttonLunch, buttonDinner, buttonDone;
+    private Dialog logDialog;
+    private EditText editText_category;
+    private FirebaseDatabase database;
+    private FirebaseAuth auth;
+    private DatabaseReference reference;
+    private double caloriesValue = 0.0;
+    private double carbohydratesValue = 0.0;
+    private double fatsValue = 0.0;
+    private double proteinValue = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +66,8 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
         id = Integer.parseInt(getIntent().getStringExtra("id"));
         String type = getIntent().getStringExtra("type");
         Log.d("FoodDetailsActivity", "Received id: " + id);
+
+        mealType = getIntent().getStringExtra("mealType");
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -99,11 +101,26 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
         buttonBreakfast = logDialog.findViewById(R.id.button_category_breakfast);
         buttonLunch = logDialog.findViewById(R.id.button_category_lunch);
         buttonDinner = logDialog.findViewById(R.id.button_category_dinner);
+        buttonDone = logDialog.findViewById(R.id.button_category_done);
+        textView_done = logDialog.findViewById(R.id.textView_done);
+        textView_option = logDialog.findViewById(R.id.textView_option);
 
         buttonLogFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logDialog.show();
+                if (mealType == null)
+                {
+                    textView_done.setVisibility(View.GONE);
+                    buttonDone.setVisibility(View.GONE);
+                }
+                else
+                {
+                    textView_option.setVisibility(View.GONE);
+                    buttonBreakfast.setVisibility(View.GONE);
+                    buttonLunch.setVisibility(View.GONE);
+                    buttonDinner.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -134,6 +151,15 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             }
         });
 
+        buttonDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logFood(mealType);
+                Intent intent = new Intent(SearchFoodDetailsActivity.this, FoodDiaryActivity.class);
+                startActivity(intent);
+            }
+        });
+
         buttonHome_searchFoodDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,7 +169,6 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
         });
 
     }
-
     private void findViews()
     {
         textView_foodDetails_name = findViewById(R.id.textView_foodDetails_name);
@@ -156,7 +181,6 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
         buttonHome_searchFoodDetails = findViewById(R.id.buttonHome_searchFoodDetails);
         buttonLogFood = findViewById(R.id.buttonLogFood);
     }
-
     private final IngredientDetailsListener ingredientDetailsListener = new IngredientDetailsListener() {
         @Override
         public void didFetch(IngredientDetailsResponse response, String message) {
@@ -164,9 +188,7 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             textView_foodDetails_name.setText(response.name);
 
             if (response.nutrition != null) {
-                Log.d("FoodDetailsActivity", "Nutrition data received");
                 for (Nutrient item : response.nutrition.nutrients) {
-                    Log.d("FoodDetailsActivity", "Nutrient: " + item.name + " Amount: " + item.amount + " Unit: " + item.unit);
                     switch (item.name) {
                         case "Calories":
                             caloriesValue = item.amount;
@@ -188,13 +210,11 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
                 }
             }
         }
-
         @Override
         public void didError(String message) {
             Toast.makeText(SearchFoodDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
     private final RecipeDetailsListener recipeDetailsListener = new RecipeDetailsListener() {
         @Override
         public void didFetch(RecipeDetailsResponse response, String message) {
@@ -229,7 +249,6 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
             Toast.makeText(SearchFoodDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
     private String getCurrentDate() {
         // SimpleDateFormat to get the current date
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
@@ -237,14 +256,14 @@ public class SearchFoodDetailsActivity extends AppCompatActivity {
     }
     private void logFood(String mealType) {
         String foodName = textView_foodDetails_name.getText().toString();
-
         String amountString = editText_category.getText().toString().trim();
+        double amount;
+
         if (amountString.isEmpty()) {
             Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double amount;
         try {
             amount = Double.parseDouble(amountString);
         } catch (NumberFormatException e) {

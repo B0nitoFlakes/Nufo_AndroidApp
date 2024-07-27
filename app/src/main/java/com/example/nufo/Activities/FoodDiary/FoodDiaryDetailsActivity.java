@@ -33,14 +33,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FoodDiaryDetailsActivity extends AppCompatActivity {
-    String uid, mealType, dateString;
-    Date date;
-    TextView textView_foodDiaryDetails_name, textView_foodDiaryDetails_calories, textView_foodDiaryDetails_carbohydrates, textView_foodDiaryDetails_fats, textView_foodDiaryDetails_protein, textView_foodDiaryDetails_amount;
-    String id;
-    FirebaseAuth auth;
-    FirebaseDatabase database;
-    Button buttonHome_foodDiaryDetails, button_yes, button_no, buttonDeleteFood;
-    Dialog deleteDialog;
+    private String uid, mealType, dateString;
+    private TextView textView_foodDiaryDetails_name, textView_foodDiaryDetails_calories, textView_foodDiaryDetails_carbohydrates, textView_foodDiaryDetails_fats, textView_foodDiaryDetails_protein, textView_foodDiaryDetails_amount;
+    private String id;
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
+    private DatabaseReference foodRef;
+    private Button buttonHome_foodDiaryDetails, button_yes, button_no, buttonDeleteFood;
+    private Dialog deleteDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +60,69 @@ public class FoodDiaryDetailsActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         uid = auth.getUid();
 
-        System.out.println(id + mealType + dateString);
-
         findViews();
+        loadMealData(id);
+        foodDeletion();
 
-        DatabaseReference foodRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("foodLog").child(mealType).child(dateString).child(id);
+        buttonHome_foodDiaryDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FoodDiaryDetailsActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
+    }
+    private void findViews()
+    {
+        textView_foodDiaryDetails_name = findViewById(R.id.textView_foodDiaryDetails_name);
+        textView_foodDiaryDetails_calories = findViewById(R.id.textView_foodDiaryDetails_calories);
+        textView_foodDiaryDetails_carbohydrates = findViewById(R.id.textView_foodDiaryDetails_carbohydrates);
+        textView_foodDiaryDetails_fats = findViewById(R.id.textView_foodDiaryDetails_fats);
+        textView_foodDiaryDetails_protein = findViewById(R.id.textView_foodDiaryDetails_protein);
+        textView_foodDiaryDetails_amount = findViewById(R.id.textView_foodDiaryDetails_amount);
+        buttonHome_foodDiaryDetails = findViewById(R.id.buttonHome_foodDiaryDetails);
+        buttonDeleteFood = findViewById(R.id.buttonDeleteFood);
+    }
+    private void loadMealData(String id)
+    {
+        if(id !=null)
+        {
+            foodRef = database.getReference("users").child(uid).child("foodLog").child(mealType).child(dateString).child(id);
+            foodRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    DiaryHelperClass foodItem = snapshot.getValue(DiaryHelperClass.class);
+                    if(foodItem !=null)
+                    {
+                        String foodName = foodItem.getFoodName();
+                        String amount = foodItem.getAmount();
+                        String caloriesValue = String.valueOf(foodItem.getCaloriesValue());
+                        String carbohydratesValue = String.valueOf(foodItem.getCarbohydratesValue());
+                        String fatsValue = String.valueOf(foodItem.getFatsValue());
+                        String proteinValue = String.valueOf(foodItem.getProteinValue());
+
+                        textView_foodDiaryDetails_amount.setText(amount);
+                        textView_foodDiaryDetails_name.setText(foodName);
+                        textView_foodDiaryDetails_calories.setText(caloriesValue);
+                        textView_foodDiaryDetails_carbohydrates.setText(carbohydratesValue);
+                        textView_foodDiaryDetails_fats.setText(fatsValue);
+                        textView_foodDiaryDetails_protein.setText(proteinValue);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(FoodDiaryDetailsActivity.this, "Error" , Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        {
+            Toast.makeText(FoodDiaryDetailsActivity.this, "Food name not passed", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void foodDeletion()
+    {
         deleteDialog = new Dialog(FoodDiaryDetailsActivity.this);
         deleteDialog.setContentView(R.layout.delete_food);
         deleteDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -102,65 +160,7 @@ public class FoodDiaryDetailsActivity extends AppCompatActivity {
                 deleteDialog.dismiss();
             }
         });
-
-        if(id !=null)
-        {
-            foodRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    DiaryHelperClass foodItem = snapshot.getValue(DiaryHelperClass.class);
-                    if(foodItem !=null)
-                    {
-                        String foodName = foodItem.getFoodName();
-                        String amount = foodItem.getAmount();
-                        String caloriesValue = String.valueOf(foodItem.getCaloriesValue());
-                        String carbohydratesValue = String.valueOf(foodItem.getCarbohydratesValue());
-                        String fatsValue = String.valueOf(foodItem.getFatsValue());
-                        String proteinValue = String.valueOf(foodItem.getProteinValue());
-
-                        System.out.println("Calories : " + caloriesValue +  "Carbs : " + carbohydratesValue +  "Fats : " + fatsValue +  "Protein : " + proteinValue);
-
-                        textView_foodDiaryDetails_amount.setText(amount);
-                        textView_foodDiaryDetails_name.setText(foodName);
-                        textView_foodDiaryDetails_calories.setText(caloriesValue);
-                        textView_foodDiaryDetails_carbohydrates.setText(carbohydratesValue);
-                        textView_foodDiaryDetails_fats.setText(fatsValue);
-                        textView_foodDiaryDetails_protein.setText(proteinValue);
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }
-        else
-        {
-            Toast.makeText(FoodDiaryDetailsActivity.this, "Food name not passed", Toast.LENGTH_SHORT).show();
-        }
-
-        buttonHome_foodDiaryDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FoodDiaryDetailsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
-    private void findViews()
-    {
-        textView_foodDiaryDetails_name = findViewById(R.id.textView_foodDiaryDetails_name);
-        textView_foodDiaryDetails_calories = findViewById(R.id.textView_foodDiaryDetails_calories);
-        textView_foodDiaryDetails_carbohydrates = findViewById(R.id.textView_foodDiaryDetails_carbohydrates);
-        textView_foodDiaryDetails_fats = findViewById(R.id.textView_foodDiaryDetails_fats);
-        textView_foodDiaryDetails_protein = findViewById(R.id.textView_foodDiaryDetails_protein);
-        textView_foodDiaryDetails_amount = findViewById(R.id.textView_foodDiaryDetails_amount);
-        buttonHome_foodDiaryDetails = findViewById(R.id.buttonHome_foodDiaryDetails);
-        buttonDeleteFood = findViewById(R.id.buttonDeleteFood);
-    }
 
 }

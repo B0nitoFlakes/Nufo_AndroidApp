@@ -7,6 +7,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.nufo.Activities.FoodDiary.FoodDiaryActivity;
+import com.example.nufo.Activities.MainActivity;
+import com.example.nufo.Activities.Recipes.SearchFoodActivity;
+import com.example.nufo.Activities.Recipes.SearchFoodDetailsActivity;
 import com.example.nufo.Adapters.DetectNamesAdapter;
 import com.example.nufo.Helpers.DiaryHelperClass;
 import com.example.nufo.Listeners.OnDishSelectedListener;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -58,6 +62,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class FoodRecognitionActivity extends AppCompatActivity implements Detector.DetectorListener {
 
+    private String mealType;
+    private Button buttonHome_foodRecognition, captureButton;
     private ActivityFoodRecognitionBinding binding;
     private final boolean isFrontCamera = false;
     private Preview preview;
@@ -65,21 +71,15 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
     private Camera camera;
     private ProcessCameraProvider cameraProvider;
     private Detector detector;
-
     private ExecutorService cameraExecutor;
-
     private static final String TAG = "Camera";
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
-    private Button captureButton;
     private Map<String, AtomicInteger> detectedClassCounts = new HashMap<>();
-    RequestManager requestManager;
-    DatabaseReference reference;
-    FirebaseDatabase database;
-    DetectNamesAdapter adapter;
-
-    Dialog logDialog;
-    Button buttonBreakfast, buttonLunch, buttonDinner;
+    private RequestManager requestManager;
+    private DatabaseReference reference;
+    private FirebaseDatabase database;
+    private DetectNamesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +90,9 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         setTitle("Food Recognition");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.baseline_arrow_back_24);
+
+        buttonHome_foodRecognition = findViewById(R.id.buttonHome_foodRecognition);
+        mealType = getIntent().getStringExtra("mealType");
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String uid = auth.getCurrentUser().getUid();
@@ -111,6 +114,14 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         cameraExecutor = Executors.newSingleThreadExecutor();
         captureButton = findViewById(R.id.capture_button);
         captureButton.setOnClickListener(v -> captureDetectedObjects());
+
+        buttonHome_foodRecognition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FoodRecognitionActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void startCamera() {
@@ -123,8 +134,6 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             }
         }, ContextCompat.getMainExecutor(this));
     }
-
-
     private void bindCameraUseCases() {
         if (cameraProvider == null) {
             Log.e(TAG, "Camera initialization failed.");
@@ -187,7 +196,6 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         }
         return true;
     }
-
     private final ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(),
             permissions -> {
@@ -209,7 +217,6 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         cameraExecutor.shutdown(); // Shutdown the executor service
 
     }
-
     @Override
     public void onBackPressed() {
         // Stop image analysis and release resources
@@ -219,7 +226,6 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
 
         super.onBackPressed();
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -233,39 +239,24 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void captureDetectedObjects() {
         showBottomSheet(new ArrayList<>(detectedClassCounts.keySet())); // Show the bottom sheet with detected objects
     }
-
     private void showBottomSheet(List<String> classNames) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_layout_recognition, null);
-        RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recycler_view_labels);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
         requestManager = new RequestManager(this);
-
         // Create a list to collect all matched results
         List<Result> matchedNames = new ArrayList<>();
 
-        if (adapter == null) {
-            adapter = new DetectNamesAdapter(FoodRecognitionActivity.this, matchedNames, requestManager, detectedClassCounts);
-        }
+        RecyclerView recyclerView = bottomSheetView.findViewById(R.id.recycler_view_labels);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new DetectNamesAdapter(FoodRecognitionActivity.this, matchedNames, requestManager, detectedClassCounts);
         recyclerView.setAdapter(adapter);
 
-        logDialog = new Dialog(FoodRecognitionActivity.this);
-        logDialog.setContentView(R.layout.log_food_category_food_recognition);
-        logDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        logDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.log_dialog_bg));
-        logDialog.setCancelable(true);
-
-        buttonBreakfast = logDialog.findViewById(R.id.button_category_breakfast_food_recognition);
-        buttonLunch = logDialog.findViewById(R.id.button_category_lunch_food_recognition);
-        buttonDinner = logDialog.findViewById(R.id.button_category_dinner_food_recognition);
-
         for (String classname : classNames) {
-            int count = detectedClassCounts.get(classname).get();
             requestManager.searchIngredient(new SearchIngredientListener() {
                 @Override
                 public void didFetch(SearchIngredientApiResponse response, String message) {
@@ -276,59 +267,22 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
                     bottomSheetView.findViewById(R.id.button_detected_logFood).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            List<DiaryHelperClass> selectedDishes = adapter.getSelectedDishes();
-
-                            for(Result matchname : matchedNames)
-                            {
-                                Log.d("Food Detect", matchname.name);
-                            }
-
-                            StringBuilder logMessage = new StringBuilder("Selected dishes: ");
-                            for (DiaryHelperClass dish : selectedDishes) {
-                                listener.onDishSelected(dish);
-                            }
-                            logDialog.show();
-                        }
-                    });
-                    buttonBreakfast.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            logSelectedDishes("Breakfast");
-                            Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                    buttonLunch.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            logSelectedDishes("Lunch");
-                            Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-                    buttonDinner.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            logSelectedDishes("Dinner");
+                            logSelectedDishes(mealType);
                             Intent intent = new Intent(FoodRecognitionActivity.this, FoodDiaryActivity.class);
                             startActivity(intent);
                         }
                     });
                 }
-
                 @Override
                 public void didError(String message) {
-
+                    Toast.makeText(FoodRecognitionActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
             }, classname);
-
         }
-
         bottomSheetDialog.setCancelable(true);
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -338,15 +292,14 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             requestPermissionLauncher.launch(REQUIRED_PERMISSIONS);
         }
     }
-
     @Override
     public void onEmptyDetect() {
         runOnUiThread(() -> binding.overlay.invalidate());
     }
-
     @Override
     public void onDetect(List<BoundingBox> boundingBoxes, long inferenceTime) {
         detectedClassCounts.clear();
+
         for (BoundingBox box : boundingBoxes) {
             String className = box.getClsName();
             if (detectedClassCounts.containsKey(className)) {
@@ -362,13 +315,10 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             binding.overlay.invalidate();
         });
     }
-
     private String getCurrentDate() {
-        // SimpleDateFormat to get the current date
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         return sdf.format(new Date());
     }
-
     private void logSelectedDishes(String mealType) {
         List<DiaryHelperClass> selectedDishes = adapter.getSelectedDishes();
 
@@ -381,27 +331,7 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
             {
                 Toast.makeText(this, foodName + " logged for " + mealType, Toast.LENGTH_SHORT).show();
             });
-
         }
-
     }
-
-    private final OnDishSelectedListener listener = new OnDishSelectedListener() {
-        @Override
-        public void onDishSelected(DiaryHelperClass dish) {
-            String dishName = dish.getFoodName();
-            String dishCal = String.valueOf(dish.getCaloriesValue());
-            String count = String.valueOf(dish.getAmount());
-            String dishCarb = String.valueOf(dish.getCarbohydratesValue());
-            String dishFat = String.valueOf(dish.getFatsValue());
-            String dishProtein = String.valueOf(dish.getProteinValue());
-            Log.d("Food Detection Info", "FoodName " + dishName + " FoodAmount" + count + " FoodCal" + dishCal + " Fat " + dishFat + " Protein " + dishProtein );
-        }
-
-        @Override
-        public void onDishDeselected(DiaryHelperClass dish) {
-
-        }
-    };
 
 }

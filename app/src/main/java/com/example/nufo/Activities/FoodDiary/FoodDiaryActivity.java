@@ -41,22 +41,21 @@ import java.util.List;
 import java.util.Locale;
 
 public class FoodDiaryActivity extends AppCompatActivity {
-    String uid, date;
-    TextView textView_date, textView_diary_caloriesConsumed, textView_diary_calorieGoals, textView_diary_totalFoodCal, textView_diary_caloriesLeft;
-    Button button_diary_breakfast,  button_diary_lunch, button_diary_dinner, buttonHome_foodDiary, button_option_manualSearch, button_option_foodRecognition;
-    RecyclerView recycler_diary_breakfast, recycler_diary_lunch, recycler_diary_dinner;
-    Calendar currentCalendar;
-    ImageButton buttonBack, button_forward;
-    FoodAdapter breakfastAdapter, lunchAdapter, dinnerAdapter;
-    List<DiaryHelperClass> breakfastList = new ArrayList<>();
-    List<DiaryHelperClass> lunchList = new ArrayList<>();
-    List<DiaryHelperClass> dinnerList = new ArrayList<>();
-    FirebaseAuth auth;
-    FirebaseDatabase database;
-    DatabaseReference reference, calorieReference;
-    Dialog optionDialog;
-
-    double calorieGoal;
+    private String uid, date, selectedMealType;
+    private TextView textView_date, textView_diary_caloriesConsumed, textView_diary_calorieGoals, textView_diary_totalFoodCal, textView_diary_caloriesLeft;
+    private Button button_diary_breakfast,  button_diary_lunch, button_diary_dinner, buttonHome_foodDiary, button_option_manualSearch, button_option_foodRecognition;
+    private RecyclerView recycler_diary_breakfast, recycler_diary_lunch, recycler_diary_dinner;
+    private Calendar currentCalendar;
+    private ImageButton buttonBack, button_forward;
+    private FoodAdapter breakfastAdapter, lunchAdapter, dinnerAdapter;
+    private List<DiaryHelperClass> breakfastList = new ArrayList<>();
+    private List<DiaryHelperClass> lunchList = new ArrayList<>();
+    private List<DiaryHelperClass> dinnerList = new ArrayList<>();
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
+    private DatabaseReference reference, calorieReference;
+    private Dialog optionDialog;
+    private double calorieGoal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +108,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
 
         button_forward.setOnClickListener(v -> {
             Log.d("FoodDiaryActivity", "buttonBack clicked");
-            // Move the calendar back by one day
+            // Move the calendar up by one day
             currentCalendar.add(Calendar.DAY_OF_YEAR, +1);
             updateDateDisplay();
         });
@@ -117,6 +116,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
         button_diary_breakfast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedMealType = "Breakfast";
                 optionDialog.show();
             }
         });
@@ -124,6 +124,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
         button_diary_lunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedMealType = "Lunch";
                 optionDialog.show();
             }
         });
@@ -131,6 +132,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
         button_diary_dinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedMealType = "Dinner";
                 optionDialog.show();
             }
         });
@@ -139,7 +141,9 @@ public class FoodDiaryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FoodDiaryActivity.this, SearchFoodActivity.class);
+                intent.putExtra("mealType", selectedMealType);
                 startActivity(intent);
+                optionDialog.dismiss();
             }
         });
 
@@ -147,6 +151,7 @@ public class FoodDiaryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(FoodDiaryActivity.this, FoodRecognitionActivity.class);
+                intent.putExtra("mealType", selectedMealType);
                 startActivity(intent);
                 optionDialog.dismiss();
             }
@@ -161,7 +166,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
         });
 
     }
-
     protected void onResume() {
         super.onResume();
         updateDateDisplay();
@@ -169,7 +173,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
             optionDialog.dismiss();
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -177,7 +180,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
             optionDialog.dismiss();
         }
     }
-
     private void findViews()
     {
         textView_date = findViewById(R.id.textView_date);
@@ -198,7 +200,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
         recycler_diary_lunch = findViewById(R.id.recycler_diary_lunch);
         recycler_diary_dinner = findViewById(R.id.recycler_diary_dinner);
     }
-
     private void updateDateDisplay() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         date = sdf.format(currentCalendar.getTime());
@@ -213,13 +214,11 @@ public class FoodDiaryActivity extends AppCompatActivity {
         loadCalorieGoal();
         loadFoodData(date);
     }
-
     private boolean isToday(Calendar calendar) {
         Calendar today = Calendar.getInstance();
         return calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
                 calendar.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR);
     }
-
     private void loadCalorieGoal() {
         calorieReference = reference.child("personalInfo");
         calorieReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -238,13 +237,11 @@ public class FoodDiaryActivity extends AppCompatActivity {
             }
         });
     }
-
     private void loadFoodData(String date) {
         loadMealData("Breakfast", date, breakfastList, breakfastAdapter);
         loadMealData("Lunch", date, lunchList, lunchAdapter);
         loadMealData("Dinner", date, dinnerList, dinnerAdapter);
     }
-
     private void loadMealData(String mealType, String date, List<DiaryHelperClass> mealList, FoodAdapter adapter) {
         reference.child("foodLog").child(mealType).child(date).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -271,7 +268,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
             }
         });
     }
-
     private void calculateAndDisplayCaloriesInfo() {
         double totalCalories = 0.00;
         double goals, calorieRemain;
@@ -295,7 +291,6 @@ public class FoodDiaryActivity extends AppCompatActivity {
         textView_diary_caloriesLeft.setText(String.format(Locale.getDefault(), "%.2f", calorieRemain));
 
     }
-
     private final FoodClickListener foodClickListener = new FoodClickListener() {
         @Override
         public void onFoodClicked(String id, String mealType, String date) {

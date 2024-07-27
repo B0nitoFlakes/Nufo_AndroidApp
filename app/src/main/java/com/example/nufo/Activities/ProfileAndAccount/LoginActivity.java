@@ -33,14 +33,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
-    FirebaseAuth auth;
-    EditText loginEmail, loginPassword, editText_email;
-    TextView redirectSignUpText, textView_login_forgotPassword;
-    Button loginButton, resetButton, cancelButton;
-    Dialog forgetPassDialog;
-
-    FirebaseAuth.AuthStateListener authStateListener;
-
+    private FirebaseAuth auth;
+    private EditText loginEmail, loginPassword, editText_email;
+    private TextView redirectSignUpText, textView_login_forgotPassword;
+    private Button loginButton, resetButton, cancelButton;
+    private Dialog forgetPassDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         auth = FirebaseAuth.getInstance();
-        loginEmail = findViewById(R.id.LoginEmail);
-        loginPassword = findViewById(R.id.LoginPassword);
-        redirectSignUpText = findViewById(R.id.SignUpRedirectText);
-        loginButton = findViewById(R.id.buttonLogin);
-        textView_login_forgotPassword = findViewById(R.id.textView_login_forgotPassword);
+
+        findViews();
 
         forgetPassDialog = new Dialog(LoginActivity.this);
         forgetPassDialog.setContentView(R.layout.reset_password);
@@ -129,7 +123,15 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public Boolean validateEmail()
+    private void findViews()
+    {
+        loginEmail = findViewById(R.id.LoginEmail);
+        loginPassword = findViewById(R.id.LoginPassword);
+        redirectSignUpText = findViewById(R.id.SignUpRedirectText);
+        loginButton = findViewById(R.id.buttonLogin);
+        textView_login_forgotPassword = findViewById(R.id.textView_login_forgotPassword);
+    }
+    private Boolean validateEmail()
     {
         String val = loginEmail.getText().toString();
         if(val.isEmpty())
@@ -148,8 +150,7 @@ public class LoginActivity extends AppCompatActivity {
             return true;
         }
     }
-
-    public Boolean validatePassword()
+    private Boolean validatePassword()
     {
         String val = loginPassword.getText().toString();
         if(val.isEmpty())
@@ -163,8 +164,7 @@ public class LoginActivity extends AppCompatActivity {
             return true;
         }
     }
-
-    public void checkUser()
+    private void checkUser()
     {
         String userEmail = loginEmail.getText().toString().trim();
         String userPass = loginPassword.getText().toString().trim();

@@ -22,14 +22,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
+    private String uid;
+    private TextView textView_profile_name, textView_profile_age, textView_profile_gender, textView_profile_height, textView_profile_weight, textView_profile_goal;
+    private Button button_update_profile, buttonHome_profile;
+    private FirebaseAuth auth;
+    private  FirebaseDatabase database;
+    private DatabaseReference reference, personalReference;
 
-    TextView textView_profile_name, textView_profile_age, textView_profile_gender, textView_profile_height, textView_profile_weight, textView_profile_goal;
-    FirebaseDatabase database;
-    FirebaseAuth auth;
-    DatabaseReference reference, personalReference;
-    String uid;
-
-    Button button_update_profile, buttonHome_profile;
 
     private static final String TAG = "ProfileActivity";
 
@@ -84,7 +83,6 @@ public class ProfileActivity extends AppCompatActivity {
         buttonHome_profile = findViewById(R.id.buttonHome_profile);
 
     }
-
     private void dataRetrieval(){
 
         personalReference.addListenerForSingleValueEvent(new ValueEventListener() {

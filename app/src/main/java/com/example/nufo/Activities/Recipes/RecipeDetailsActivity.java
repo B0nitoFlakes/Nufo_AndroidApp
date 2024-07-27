@@ -46,28 +46,28 @@ import java.util.List;
 import java.util.Locale;
 
 public class RecipeDetailsActivity extends AppCompatActivity {
-    String uid;
-    int id;
-    TextView textView_meal_name, textView_meal_source, textView_meal_summary;
-    TextView textView_calories, textView_carbohydrates, textView_fats, textView_protein;
-    ImageView imageView_meal_image;
-    RecyclerView recycler_meal_ingredients, recycler_meal_similar, recycler_meal_instructions;
-    Button buttonLogFood, buttonBreakfast, buttonLunch, buttonDinner, buttonHome_recipeDetails;
-    EditText editText_category;
-    RequestManager manager;
-    ProgressDialog dialog;
-    Dialog logDialog;
-    IngredientsAdapter ingredientsAdapter;
-    SimilarRecipeAdapter similarRecipeAdapter;
-    InstructionsAdapter instructionsAdapter;
-    FirebaseDatabase database;
-    FirebaseAuth auth;
-    DatabaseReference reference;
+    private String uid;
+    private int id;
+    private TextView textView_meal_name, textView_meal_source;
+    private TextView textView_calories, textView_carbohydrates, textView_fats, textView_protein;
+    private ImageView imageView_meal_image;
+    private RecyclerView recycler_meal_ingredients, recycler_meal_similar, recycler_meal_instructions;
+    private Button buttonLogFood, buttonBreakfast, buttonLunch, buttonDinner,buttonDone, buttonHome_recipeDetails;
+    private EditText editText_category;
+    private RequestManager manager;
+    private ProgressDialog dialog;
+    private Dialog logDialog;
+    private IngredientsAdapter ingredientsAdapter;
+    private SimilarRecipeAdapter similarRecipeAdapter;
+    private InstructionsAdapter instructionsAdapter;
+    private FirebaseDatabase database;
+    private FirebaseAuth auth;
+    private DatabaseReference reference;
 
-    double caloriesValue = 0.0;
-    double carbohydratesValue = 0.0;
-    double fatsValue = 0.0;
-    double proteinValue = 0.0;
+    private double caloriesValue = 0.0;
+    private double carbohydratesValue = 0.0;
+    private double fatsValue = 0.0;
+    private double proteinValue = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,24 +96,13 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         dialog.setTitle("Loading Details");
         dialog.show();
 
-        logDialog = new Dialog(RecipeDetailsActivity.this);
-        logDialog.setContentView(R.layout.log_food_category);
-        logDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        logDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.log_dialog_bg));
-        logDialog.setCancelable(true);
-
-        editText_category = logDialog.findViewById(R.id.editText_category);
-        buttonBreakfast = logDialog.findViewById(R.id.button_category_breakfast);
-        buttonLunch = logDialog.findViewById(R.id.button_category_lunch);
-        buttonDinner = logDialog.findViewById(R.id.button_category_dinner);
-
         buttonLogFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logDialog.show();
+                buttonDone.setVisibility(View.GONE);
             }
         });
-
         buttonBreakfast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +111,6 @@ public class RecipeDetailsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         buttonLunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,7 +119,6 @@ public class RecipeDetailsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         buttonDinner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,11 +136,9 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
     private void findViews() {
         textView_meal_name = findViewById(R.id.textView_meal_name);
         textView_meal_source = findViewById(R.id.textView_meal_source);
-        textView_meal_summary = findViewById(R.id.textView_meal_summary);
         imageView_meal_image = findViewById(R.id.imageView_meal_image);
         recycler_meal_ingredients = findViewById(R.id.recycler_meal_ingredients);
         recycler_meal_similar = findViewById(R.id.recycler_meal_similar);
@@ -166,18 +151,25 @@ public class RecipeDetailsActivity extends AppCompatActivity {
 
         buttonLogFood = findViewById(R.id.buttonLogFood);
         buttonHome_recipeDetails = findViewById(R.id.buttonHome_recipeDetails);
-    }
 
+        logDialog = new Dialog(RecipeDetailsActivity.this);
+        logDialog.setContentView(R.layout.log_food_category);
+        logDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        logDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.log_dialog_bg));
+        logDialog.setCancelable(true);
+
+        editText_category = logDialog.findViewById(R.id.editText_category);
+        buttonBreakfast = logDialog.findViewById(R.id.button_category_breakfast);
+        buttonLunch = logDialog.findViewById(R.id.button_category_lunch);
+        buttonDinner = logDialog.findViewById(R.id.button_category_dinner);
+        buttonDone = logDialog.findViewById(R.id.button_category_done);
+    }
     private final RecipeDetailsListener recipeDetailsListener = new RecipeDetailsListener() {
         @Override
         public void didFetch(RecipeDetailsResponse response, String message) {
             dialog.dismiss();
             textView_meal_name.setText(response.title);
             textView_meal_source.setText(response.sourceName);
-            textView_meal_summary.setText(response.summary);
-
-            Log.d("RecipeDetailsActivity", "Image URL: " + response.image);
-            Log.d("RecipeDetailsActivity", "ID: " + response.id);
             Picasso.get().load(response.image).into(imageView_meal_image);
 
             recycler_meal_ingredients.setHasFixedSize(true);
@@ -208,37 +200,11 @@ public class RecipeDetailsActivity extends AppCompatActivity {
                 }
             }
         }
-
         @Override
         public void didError(String message) {
             Toast.makeText(RecipeDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
-    private final SimilarRecipeListener similarRecipeListener = new SimilarRecipeListener() {
-        @Override
-        public void didFetch(List<SimilarRecipeResponse> response, String message) {
-            recycler_meal_similar.setHasFixedSize(true);
-            recycler_meal_similar.setLayoutManager(new LinearLayoutManager(RecipeDetailsActivity.this, LinearLayoutManager.HORIZONTAL, false));
-            similarRecipeAdapter = new SimilarRecipeAdapter(RecipeDetailsActivity.this, response, recipeClickListener);
-            Log.d("Responses", "Response size : " + response.size());
-            recycler_meal_similar.setAdapter(similarRecipeAdapter);
-        }
-
-        @Override
-        public void didError(String message) {
-            Toast.makeText(RecipeDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
-        }
-    };
-
-    private final RecipeClickListener recipeClickListener = new RecipeClickListener() {
-        @Override
-        public void onRecipeClicked(String id) {
-            startActivity(new Intent(RecipeDetailsActivity.this, RecipeDetailsActivity.class)
-                    .putExtra("id", id));
-        }
-    };
-
     private final InstructionsListener instructionsListener = new InstructionsListener() {
         @Override
         public void didFetch(List<InstructionsResponse> response, String message) {
@@ -247,30 +213,46 @@ public class RecipeDetailsActivity extends AppCompatActivity {
             instructionsAdapter = new InstructionsAdapter(RecipeDetailsActivity.this, response);
             recycler_meal_instructions.setAdapter(instructionsAdapter);
         }
-
         @Override
         public void didError(String message) {
             Toast.makeText(RecipeDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     };
-
+    private final SimilarRecipeListener similarRecipeListener = new SimilarRecipeListener() {
+        @Override
+        public void didFetch(List<SimilarRecipeResponse> response, String message) {
+            recycler_meal_similar.setHasFixedSize(true);
+            recycler_meal_similar.setLayoutManager(new LinearLayoutManager(RecipeDetailsActivity.this, LinearLayoutManager.HORIZONTAL, false));
+            similarRecipeAdapter = new SimilarRecipeAdapter(RecipeDetailsActivity.this, response, recipeClickListener);
+            recycler_meal_similar.setAdapter(similarRecipeAdapter);
+        }
+        @Override
+        public void didError(String message) {
+            Toast.makeText(RecipeDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
+        }
+    };
+    private final RecipeClickListener recipeClickListener = new RecipeClickListener() {
+        @Override
+        public void onRecipeClicked(String id) {
+            startActivity(new Intent(RecipeDetailsActivity.this, RecipeDetailsActivity.class)
+                    .putExtra("id", id));
+        }
+    };
     private String getCurrentDate() {
         // SimpleDateFormat to get the current date
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         return sdf.format(new Date());
     }
-
     private void logFood(String mealType) {
         String foodName = textView_meal_name.getText().toString();
-
         String amountString = editText_category.getText().toString().trim();
+        double amount;
+
         if (amountString.isEmpty()) {
-            amountString = "1";
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double amount;
         try {
             amount = Double.parseDouble(amountString);
         } catch (NumberFormatException e) {

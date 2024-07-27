@@ -2,6 +2,7 @@ package com.example.nufo.Activities.ProfileAndAccount;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,12 +30,12 @@ import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    EditText signUpEmail, signUpPassword, reEnterSignUpPassword, signUpUsername;
-    TextView loginRedirectText;
-    Button signUpButton;
-    FirebaseAuth auth;
-    FirebaseDatabase database;
-    DatabaseReference reference;
+    private EditText signUpEmail, signUpPassword, reEnterSignUpPassword, signUpUsername;
+    private TextView loginRedirectText;
+    private Button signUpButton;
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
+    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class SignUpActivity extends AppCompatActivity {
                             if(task.isSuccessful())
                             {
                                 String uid = auth.getCurrentUser().getUid();
-                                AccountHelperClass accountHelperClass = new AccountHelperClass(username, email, pass);
+                                AccountHelperClass accountHelperClass = new AccountHelperClass(username, email);
                                 reference.child(uid).setValue(accountHelperClass);
 
                                 Toast.makeText(SignUpActivity.this, "You have sign up successfully", Toast.LENGTH_SHORT).show();
@@ -112,7 +113,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void inputValidation(String username, String email, String pass, String rePass)
+    private void inputValidation(String username, String email, String pass, String rePass)
     {
         String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,}$";
         Pattern pattern = Pattern.compile(passwordPattern);
@@ -122,8 +123,11 @@ public class SignUpActivity extends AppCompatActivity {
         {
             signUpEmail.setError("It is empty");
             signUpEmail.requestFocus();
-        }
-        else if(pass.isEmpty())
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        {
+            signUpEmail.setError("Incorrect email format");
+            signUpEmail.requestFocus();
+        } else if(pass.isEmpty())
         {
             signUpPassword.setError("Password is empty");
             signUpPassword.requestFocus();

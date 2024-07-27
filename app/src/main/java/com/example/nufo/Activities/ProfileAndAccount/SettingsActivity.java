@@ -15,9 +15,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    CardView cardView_profile, cardView_account;
-    Button button_logout, buttonHome_settingsNav;
-    FirebaseAuth auth;
+    private CardView cardView_profile, cardView_account;
+    private Button button_logout, buttonHome_settingsNav;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -26,13 +26,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipesActivity extends AppCompatActivity {
-    ProgressDialog dialog;
-    RequestManager manager;
-    RandomRecipeAdapter randomRecipeAdapter;
-    RecyclerView recyclerView;
-    Spinner spinner;
-    List<String> tags = new ArrayList<>();
-    SearchView searchView;
+    private ProgressDialog dialog;
+    private RequestManager manager;
+    private RandomRecipeAdapter randomRecipeAdapter;
+    private RecyclerView recyclerView;
+    private Spinner spinner;
+    private List<String> tags = new ArrayList<>();
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

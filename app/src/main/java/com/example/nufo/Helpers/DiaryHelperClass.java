@@ -1,8 +1,16 @@
 package com.example.nufo.Helpers;
 
 public class DiaryHelperClass {
-    String foodName, id, mealType, date, amount;
-    double caloriesValue, carbohydratesValue, proteinValue, fatsValue;
+    public String foodName, id, mealType, date, amount;
+    public double caloriesValue, carbohydratesValue, proteinValue, fatsValue;
+    public DiaryHelperClass(String amount, String foodName, double caloriesValue, double carbohydratesValue, double proteinValue, double fatsValue) {
+        this.amount = amount;
+        this.foodName = foodName;
+        this.caloriesValue = caloriesValue;
+        this.carbohydratesValue = carbohydratesValue;
+        this.proteinValue = proteinValue;
+        this.fatsValue = fatsValue;
+    }
 
     public String getAmount() {
         return amount;
@@ -76,14 +84,7 @@ public class DiaryHelperClass {
         this.fatsValue = fatsValue;
     }
 
-    public DiaryHelperClass(String amount, String foodName, double caloriesValue, double carbohydratesValue, double proteinValue, double fatsValue) {
-        this.amount = amount;
-        this.foodName = foodName;
-        this.caloriesValue = caloriesValue;
-        this.carbohydratesValue = carbohydratesValue;
-        this.proteinValue = proteinValue;
-        this.fatsValue = fatsValue;
-    }
+
 
     public DiaryHelperClass()
     {

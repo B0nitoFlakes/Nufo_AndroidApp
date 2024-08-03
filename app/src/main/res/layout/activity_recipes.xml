@@ -10,47 +10,83 @@
     tools:context=".Activities.Recipes.RecipesActivity">
 
     
-    <androidx.cardview.widget.CardView
+   <LinearLayout
+       android:orientation="vertical"
+       android:layout_weight="1"
+       android:layout_width="match_parent"
+       android:layout_height="0dp">
+
+       <androidx.cardview.widget.CardView
+           android:layout_width="match_parent"
+           android:layout_height="?attr/actionBarSize"
+           android:layout_margin="8dp"
+           app:cardElevation="8dp">
+
+           <androidx.appcompat.widget.SearchView
+               android:id="@+id/searchView_recipe"
+               app:queryHint="Search Your Recipe"
+               app:iconifiedByDefault="false"
+               android:background="@color/white"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"/>
+
+       </androidx.cardview.widget.CardView>
+
+       <Toolbar
+           android:layout_width="match_parent"
+           android:layout_height="?attr/actionBarSize">
+           <RelativeLayout
+               android:gravity="center_vertical"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+               <Spinner
+                   android:id="@+id/spinner_tags"
+                   android:gravity="center"
+                   android:layout_alignParentEnd="true"
+                   android:entries="@array/tags"
+                   android:layout_width="wrap_content"
+                   android:layout_height="match_parent"/>
+
+           </RelativeLayout>
+       </Toolbar>
+
+       <androidx.recyclerview.widget.RecyclerView
+           android:id="@+id/recycler_random"
+           android:layout_margin="4dp"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+
+       </androidx.recyclerview.widget.RecyclerView>
+   </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="0"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_margin="8dp"
-        app:cardElevation="8dp">
-        
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView_recipe"
-            app:queryHint="Search Your Recipe"
-            app:iconifiedByDefault="false"
-            android:background="@color/white"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        
-    </androidx.cardview.widget.CardView>
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/buttonHome_recipesActivity"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/green_home_24"
+            android:elevation="10dp"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText,SpUsage"
+            tools:layout_editor_absoluteY="648dp" />
 
-    <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
-        <RelativeLayout
-            android:gravity="center_vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:text="Home"
+            android:textColor="@color/green"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-            <Spinner
-                android:id="@+id/spinner_tags"
-                android:gravity="center"
-                android:layout_alignParentEnd="true"
-                android:entries="@array/tags"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-
-        </RelativeLayout>
-    </Toolbar>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_random"
-        android:layout_margin="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

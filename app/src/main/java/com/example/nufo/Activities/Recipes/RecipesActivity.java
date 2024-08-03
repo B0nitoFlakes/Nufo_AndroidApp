@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.nufo.Activities.MainActivity;
 import com.example.nufo.Adapters.RandomRecipeAdapter;
 import com.example.nufo.Listeners.RandomRecipeResponseListener;
 import com.example.nufo.Listeners.RecipeClickListener;
@@ -33,6 +35,7 @@ public class RecipesActivity extends AppCompatActivity {
     private Spinner spinner;
     private List<String> tags = new ArrayList<>();
     private SearchView searchView;
+    private Button buttonHome_recipesActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class RecipesActivity extends AppCompatActivity {
         dialog.setTitle("Loading...");
 
         searchView = findViewById(R.id.searchView_recipe);
+        buttonHome_recipesActivity = findViewById(R.id.buttonHome_recipesActivity);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -74,6 +78,14 @@ public class RecipesActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(spinnerSelectedListener);
 
         manager = new RequestManager(this);
+
+        buttonHome_recipesActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RecipesActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

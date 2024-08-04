@@ -246,6 +246,8 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_layout_recognition, null);
 
+        TextView textView_NoFood = bottomSheetView.findViewById(R.id.textView_NoFood);
+
 
         requestManager = new RequestManager(this);
         // Create a list to collect all matched results
@@ -255,6 +257,14 @@ public class FoodRecognitionActivity extends AppCompatActivity implements Detect
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new DetectNamesAdapter(FoodRecognitionActivity.this, matchedNames, requestManager, detectedClassCounts);
         recyclerView.setAdapter(adapter);
+
+        if (classNames.isEmpty()) {
+            textView_NoFood.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            textView_NoFood.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
 
         for (String classname : classNames) {
             requestManager.searchIngredient(new SearchIngredientListener() {

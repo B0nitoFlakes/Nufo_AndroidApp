@@ -70,8 +70,6 @@ public class DetectNamesAdapter extends RecyclerView.Adapter<DetectNamesAdapter.
             holder.textView_detectName.setText(result.name);
         }
 
-        holder.textView_detectId.setText(String.valueOf(result.id));
-
         holder.linearLayout_detectedFood.setVisibility(View.GONE);
         holder.random_list_container_detectFood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +77,6 @@ public class DetectNamesAdapter extends RecyclerView.Adapter<DetectNamesAdapter.
                 int clickedPosition = holder.getAdapterPosition();
                 if (holder.linearLayout_detectedFood.getVisibility() == View.GONE) {
                     holder.linearLayout_detectedFood.setVisibility(View.VISIBLE);
-                    holder.textView_detectId.setText(String.valueOf(list.get(clickedPosition).id));
                     fetchNutritionDetails(holder, list.get(clickedPosition).id, count);
 
                 } else {
@@ -143,7 +140,6 @@ public class DetectNamesAdapter extends RecyclerView.Adapter<DetectNamesAdapter.
 
             random_list_container_detectFood = itemView.findViewById(R.id.random_list_container_detectFood);
             textView_detectName = itemView.findViewById(R.id.textView_detectName);
-            textView_detectId = itemView.findViewById(R.id.textView_detectId);
             textView_detectCal = itemView.findViewById(R.id.textView_detectCal);
             textView_detectCarb = itemView.findViewById(R.id.textView_detectCarb);
             textView_detectProtein = itemView.findViewById(R.id.textView_detectProtein);

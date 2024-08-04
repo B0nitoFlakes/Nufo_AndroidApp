@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -243,7 +243,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler_diary_breakfast"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:padding="10dp"
                             />
@@ -306,7 +306,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_diary_lunch"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:padding="10dp"/>
 
@@ -369,7 +369,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_diary_dinner"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:padding="10dp"/>
 
@@ -434,4 +434,4 @@
 
         </LinearLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

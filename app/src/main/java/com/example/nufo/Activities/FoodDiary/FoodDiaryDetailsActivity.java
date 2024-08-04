@@ -116,9 +116,9 @@ public class FoodDiaryDetailsActivity extends AppCompatActivity {
                 }
             });
         }
-
+        else
         {
-            Toast.makeText(FoodDiaryDetailsActivity.this, "Food name not passed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(FoodDiaryDetailsActivity.this, "No Food Details Available" , Toast.LENGTH_SHORT).show();
         }
     }
     private void foodDeletion()

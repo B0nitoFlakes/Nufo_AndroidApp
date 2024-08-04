@@ -142,6 +142,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     String age = String.valueOf(yourInfoHelperClass.getAge());
                     String height = String.valueOf(yourInfoHelperClass.getHeight());
                     String weight = String.valueOf(yourInfoHelperClass.getWeight());
+                    float activityLevelDB = yourInfoHelperClass.getActivityLevel();
 
                     editText_profile_name.setText(name);
                     editText_profile_age.setText(age);
@@ -152,6 +153,20 @@ public class EditProfileActivity extends AppCompatActivity {
                     spinner.setSelection(spinnerPosition);
                     int spinnerWeightPosition = ((ArrayAdapter<String>) weightGoalSpinner.getAdapter()).getPosition(weightGoal);
                     weightGoalSpinner.setSelection(spinnerWeightPosition);
+
+                    int checkedRadioButtonId = R.id.r1_edit; // Default value
+                    if (activityLevelDB == 1.20f) {
+                        checkedRadioButtonId = R.id.r1_edit;
+                    } else if (activityLevelDB == 1.375f) {
+                        checkedRadioButtonId = R.id.r2_edit;
+                    } else if (activityLevelDB == 1.55f) {
+                        checkedRadioButtonId = R.id.r3_edit;
+                    } else if (activityLevelDB == 1.725f) {
+                        checkedRadioButtonId = R.id.r4_edit;
+                    } else if (activityLevelDB == 1.90f) {
+                        checkedRadioButtonId = R.id.r5_edit;
+                    }
+                    radioGroup.check(checkedRadioButtonId);
                 }
             }
 

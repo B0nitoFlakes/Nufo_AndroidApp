@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['Fresh Mango']
+
+roboflow:
+  workspace: datasetstudy
+  project: mango-7l7ug
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/datasetstudy/mango-7l7ug/dataset/1

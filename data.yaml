@@ -1,0 +1,11 @@
+train: /home/zerohexer/FYP2YOLO/Dataset/train/images
+val: /home/zerohexer/FYP2YOLO/Dataset/val/images
+
+names: 
+  0: orange
+  1: banana
+  2: apple
+  3: carrot
+  4: dragonfruit
+  5: kiwi
+
